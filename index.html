@@ -3,132 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Tryout SKD IPDN — D'Ajiks Akademi</title>
+<title>Dashboard Evaluasi — D'Ajiks Akademi</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-:root{--bg:#080C1A;--s0:#0D1225;--s1:#111929;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--gold:#F5B800;--gold2:#FFD75E;--blue:#4F7EF8;--success:#10B981;--danger:#EF4444;--warn:#F59E0B;--text:#E2E8F0;--muted:#6B7280;--r:12px}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--s0)}
-::-webkit-scrollbar-thumb{background:#2D3A5A;border-radius:3px}
-.hdr{background:linear-gradient(135deg,#060B18 0%,#0D1529 50%,#060B18 100%);border-bottom:1px solid rgba(245,184,0,.15);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:72px;position:sticky;top:0;z-index:100}
-.brand{display:flex;align-items:center;gap:14px}
-.brand-logo{width:42px;height:42px;background:linear-gradient(135deg,var(--gold),#FF8C00);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#000;box-shadow:0 0 20px rgba(245,184,0,.3)}
-.brand-text h1{font-size:15px;font-weight:700;color:var(--gold);letter-spacing:.5px}
-.brand-text p{font-size:11px;color:var(--muted)}
-.hdr-right{font-size:12px;color:var(--muted);text-align:right}
-.hdr-badge{display:inline-block;background:rgba(245,184,0,.1);border:1px solid rgba(245,184,0,.3);color:var(--gold);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:24px 32px;background:var(--s0)}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;transition:.3s}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--gold));opacity:.7}
-.stat-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
-.stat-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.8px}
-.stat-val{font-size:28px;font-weight:800;margin:4px 0;line-height:1}
-.stat-sub{font-size:11px;color:var(--muted)}
-.stat-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:28px;opacity:.2}
-.tabs-wrap{background:var(--s0);border-bottom:1px solid var(--border);padding:0 32px}
-.tabs{display:flex;gap:4px}
-.tab{padding:14px 22px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;letter-spacing:.3px;user-select:none}
-.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
-.tab:hover:not(.active){color:var(--text)}
-.content{padding:28px 32px;max-width:1400px;margin:0 auto}
-.panel{display:none}.panel.active{display:block}
-.skd-banner{background:linear-gradient(135deg,rgba(79,126,248,.08),rgba(16,185,129,.06));border:1px solid rgba(79,126,248,.2);border-radius:var(--r);padding:16px 24px;margin-bottom:24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.skd-title{font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
-.skd-items{display:flex;gap:20px;flex-wrap:wrap}
-.skd-item{text-align:center}
-.skd-item span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.skd-item strong{font-size:16px;font-weight:700;color:var(--text)}
-.skd-item em{font-size:10px;color:var(--muted)}
-.skd-note{font-size:11px;color:var(--muted);margin-left:auto;max-width:280px;line-height:1.5}
-.sec{margin-bottom:28px}
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.sec-title{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
-.sec-title::before{content:'';width:3px;height:16px;background:var(--gold);border-radius:2px;display:block}
-.chart-grid{display:grid;gap:16px}
-.chart-grid-3{grid-template-columns:repeat(3,1fr)}
-.chart-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative}
-.chart-box h3{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:16px;display:flex;align-items:center;gap:6px}
-.chart-box h3 .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.chart-canvas-wrap{position:relative;height:320px}
-.chart-canvas-sm{position:relative;height:200px}
-.student-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:24px}
-.stu-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:.2s;user-select:none}
-.stu-btn:hover{border-color:rgba(255,255,255,.2)}
-.stu-btn.active{border-color:var(--gold);background:rgba(245,184,0,.08)}
-.stu-btn .stu-avatar{width:36px;height:36px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#000}
-.stu-btn .stu-name{font-size:11px;font-weight:600;color:var(--text)}
-.stu-btn .stu-score{font-size:10px;color:var(--muted)}
-.profile-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px}
-.profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
-.profile-avatar{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
-.profile-info h2{font-size:20px;font-weight:800}
-.profile-info p{font-size:12px;color:var(--muted)}
-.to-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.to-cell{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
-.to-cell .to-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.to-cell .to-total{font-size:22px;font-weight:800;margin:4px 0;line-height:1}
-.to-cell .to-subs{font-size:10px;color:var(--muted);line-height:1.6}
-.to-cell .to-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-top:6px}
-.badge-pass{background:rgba(16,185,129,.15);color:#10B981;border:1px solid rgba(16,185,129,.3)}
-.badge-fail{background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.3)}
-.badge-skip{background:rgba(107,114,128,.15);color:#6B7280;border:1px solid rgba(107,114,128,.3)}
-.badge-incomplete{background:rgba(245,158,11,.15);color:#F59E0B;border:1px solid rgba(245,158,11,.3)}
-.insight-box{background:linear-gradient(135deg,rgba(79,126,248,.06),rgba(245,184,0,.04));border:1px solid rgba(79,126,248,.15);border-radius:var(--r);padding:16px 20px;margin-top:16px;font-size:13px;line-height:1.8;color:#C8D3E8}
-.insight-box strong{color:var(--gold)}
-.profile-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.rank-filter{display:flex;gap:8px;margin-bottom:20px}
-.rank-btn{background:var(--card);border:1px solid var(--border);padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s}
-.rank-btn.active{background:rgba(245,184,0,.1);border-color:var(--gold);color:var(--gold)}
-.rank-table{width:100%;border-collapse:collapse;font-size:13px}
-.rank-table th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border)}
-.rank-table td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
-.rank-table tr:hover td{background:rgba(255,255,255,.02)}
-.rank-num{font-weight:700;color:var(--muted);font-size:12px}
-.rank-num.top1{color:var(--gold)}.rank-num.top2{color:#9CA3AF}.rank-num.top3{color:#CD7F32}
-.rank-name{font-weight:600;cursor:pointer;color:var(--text);display:flex;align-items:center;gap:8px}
-.rank-name:hover{color:var(--gold)}
-.rank-name .dot-sm{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
-.cell-pass{color:#10B981;font-weight:600}.cell-fail{color:#EF4444;font-weight:600}
-.cell-fail::after{content:'⚠';font-size:10px;margin-left:3px}
-.total-col{font-weight:700;font-size:15px}
-.status-lulus{background:rgba(16,185,129,.1);color:#10B981;border:1px solid rgba(16,185,129,.25);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
-.status-gagal{background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.25);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
-.status-skip{background:rgba(107,114,128,.1);color:#6B7280;border:1px solid rgba(107,114,128,.2);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
-.delta-up{color:#10B981;font-size:11px;font-weight:600}.delta-dn{color:#EF4444;font-size:11px;font-weight:600}.delta-flat{color:var(--muted);font-size:11px}
-@media(max-width:900px){.stats-bar{grid-template-columns:repeat(2,1fr)}.chart-grid-3{grid-template-columns:1fr}.profile-charts{grid-template-columns:1fr}.to-row{grid-template-columns:repeat(2,1fr)}.content{padding:16px}.hdr{padding:0 16px}.stats-bar{padding:16px}.tabs-wrap{padding:0 16px}}
-</style>
+<link rel="stylesheet" href="/src/styles/main.css">
 </head>
 <body>
+
+<div id="loading-overlay" class="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Memuat data dari Google Sheets...</div>
+</div>
+
 <header class="hdr">
   <div class="brand">
     <div class="brand-logo">DA</div>
     <div class="brand-text">
       <h1>D'AJIKS AKADEMI</h1>
-      <p>Dashboard Tryout SKD Kedinasan IPDN · Dibuat 23 June 2026, 15:50</p>
+      <p id="hdr-sub">Dashboard Evaluasi Siswa Kedinasan IPDN</p>
     </div>
   </div>
   <div class="hdr-right">
-    <div class="hdr-badge">📊 Data TO1 – TO4</div>
-    <div style="margin-top:4px;font-size:11px">12 Siswa Aktif · 23 June 2026, 15:50</div>
+    <div class="hdr-badge" id="hdr-badge">📊 Memuat data...</div>
+    <div id="hdr-info" style="margin-top:4px;font-size:11px"></div>
   </div>
 </header>
-<div class="stats-bar">
-  <div class="stat-card" style="--accent:#4F7EF8"><div class="stat-label">Total Siswa</div><div class="stat-val" style="color:#4F7EF8">12</div><div class="stat-sub">Mengikuti ≥ 1 Tryout</div><div class="stat-icon">👥</div></div>
-  <div class="stat-card" style="--accent:#F5B800"><div class="stat-label">Rata-rata Skor TO4</div><div class="stat-val" style="color:#F5B800">390</div><div class="stat-sub">dari maksimum 550 poin</div><div class="stat-icon">📈</div></div>
-  <div class="stat-card" style="--accent:#10B981"><div class="stat-label">Lulus Threshold SKD</div><div class="stat-val" style="color:#10B981">11<span style="font-size:16px;font-weight:500">/12</span></div><div class="stat-sub">berdasarkan hasil TO4</div><div class="stat-icon">✅</div></div>
-  <div class="stat-card" style="--accent:#C084FC"><div class="stat-label">Skor Tertinggi TO4</div><div class="stat-val" style="color:#C084FC">464</div><div class="stat-sub">GITA — top performer kelas</div><div class="stat-icon">🏆</div></div>
+
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-card" style="--accent:#4F7EF8"><div class="stat-label">Total Siswa</div><div class="stat-val" id="stat-total" style="color:#4F7EF8">—</div><div class="stat-sub">Terdaftar</div><div class="stat-icon">👥</div></div>
+  <div class="stat-card" style="--accent:#F5B800"><div class="stat-label">Rata-rata Skor</div><div class="stat-val" id="stat-avg" style="color:#F5B800">—</div><div class="stat-sub" id="stat-avg-sub">Tryout Terbaru</div><div class="stat-icon">📈</div></div>
+  <div class="stat-card" style="--accent:#10B981"><div class="stat-label">Lulus Threshold SKD</div><div class="stat-val" id="stat-pass" style="color:#10B981">—</div><div class="stat-sub" id="stat-pass-sub">Tryout Terbaru</div><div class="stat-icon">✅</div></div>
+  <div class="stat-card" style="--accent:#C084FC"><div class="stat-label">Skor Tertinggi</div><div class="stat-val" id="stat-top" style="color:#C084FC">—</div><div class="stat-sub" id="stat-top-sub">Top performer</div><div class="stat-icon">🏆</div></div>
 </div>
+
 <div class="tabs-wrap">
   <div class="tabs">
     <div class="tab active" onclick="switchTab('overview')">📊 Overview Kelas</div>
     <div class="tab" onclick="switchTab('siswa')">👤 Profil Per Siswa</div>
     <div class="tab" onclick="switchTab('ranking')">🏆 Ranking & Status</div>
     <div class="tab" onclick="switchTab('kumulatif')">📋 Ringkasan Kumulatif</div>
+    <div class="tab" onclick="switchTab('toefl')">📝 TOEFL</div>
+    <div class="tab" onclick="switchTab('jasmani')">💪 Jasmani</div>
+    <div class="tab" onclick="switchTab('psiko')">🧠 Psiko</div>
   </div>
 </div>
+
 <div class="content">
   <div class="panel active" id="panel-overview">
     <div class="skd-banner">
@@ -142,17 +60,12 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min
       <div class="skd-note">Berdasarkan PermenPAN-RB No.27/2021. Semua sub-sesi harus melampaui ambang masing-masing secara bersamaan.</div>
     </div>
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Tren Skor Total — Semua Siswa (TO1 → TO4)</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
+      <div class="sec-head"><div class="sec-title">Tren Skor Total — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
       <div class="chart-box"><div class="chart-canvas-wrap"><canvas id="chartTrend"></canvas></div></div>
     </div>
     <div class="sec">
       <div class="sec-head"><div class="sec-title">Perbandingan Sub-Sesi per Tryout</div></div>
-      <div class="rank-filter" style="margin-bottom:16px">
-        <div class="rank-btn active" onclick="selectSubTO(this,1)">Tryout 1</div>
-        <div class="rank-btn" onclick="selectSubTO(this,2)">Tryout 2</div>
-        <div class="rank-btn" onclick="selectSubTO(this,3)">Tryout 3</div>
-        <div class="rank-btn" onclick="selectSubTO(this,4)">Tryout 4</div>
-      </div>
+      <div class="rank-filter" id="subTOFilter"></div>
       <div class="chart-grid chart-grid-3">
         <div class="chart-box"><h3><span class="dot" style="background:#4F7EF8"></span>TWK — Wawasan Kebangsaan <span style="margin-left:auto;color:#F59E0B">min 65</span></h3><div class="chart-canvas-sm"><canvas id="chartTWK"></canvas></div></div>
         <div class="chart-box"><h3><span class="dot" style="background:#10B981"></span>TIU — Intelegensia Umum <span style="margin-left:auto;color:#F59E0B">min 80</span></h3><div class="chart-canvas-sm"><canvas id="chartTIU"></canvas></div></div>
@@ -162,331 +75,60 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min
     <div class="sec">
       <div class="sec-head"><div class="sec-title">Ringkasan Kelas — Status per Tryout</div></div>
       <div class="chart-box" style="overflow-x:auto">
-        <table class="rank-table"><thead><tr><th>Siswa</th><th>TO1 Total</th><th>TO1 Status</th><th>TO2 Total</th><th>TO2 Status</th><th>TO3 Total</th><th>TO3 Status</th><th>TO4 Total</th><th>TO4 Status</th><th>Trend</th></tr></thead><tbody id="classTableBody"></tbody></table>
+        <table class="rank-table"><thead id="classTableHead"></thead><tbody id="classTableBody"></tbody></table>
       </div>
     </div>
   </div>
+
   <div class="panel" id="panel-siswa">
     <div style="margin-bottom:16px;font-size:13px;color:var(--muted)">Pilih siswa untuk melihat laporan lengkap perkembangan tryout-nya:</div>
     <div class="student-grid" id="studentGrid"></div>
     <div id="profileContent"></div>
   </div>
+
   <div class="panel" id="panel-ranking">
-    <div class="rank-filter">
-      <div class="rank-btn" onclick="selectRankTO(this,1)">Tryout 1</div>
-      <div class="rank-btn" onclick="selectRankTO(this,2)">Tryout 2</div>
-      <div class="rank-btn" onclick="selectRankTO(this,3)">Tryout 3</div>
-      <div class="rank-btn active" onclick="selectRankTO(this,4)">✨ Tryout 4 (Terbaru)</div>
-    </div>
+    <div class="rank-filter" id="rankTOFilter"></div>
     <div class="chart-box" style="overflow-x:auto;margin-bottom:20px">
-      <table class="rank-table"><thead><tr><th>#</th><th>Nama Siswa</th><th>TWK</th><th>TIU</th><th>TKP</th><th>Total</th><th>Status SKD</th><th>Δ dari TO1</th></tr></thead><tbody id="rankBody"></tbody></table>
+      <table class="rank-table"><thead><tr><th>#</th><th>Nama Siswa</th><th>Gender</th><th>TWK</th><th>TIU</th><th>TKP</th><th>Total</th><th>Status SKD</th><th>Δ dari TO1</th></tr></thead><tbody id="rankBody"></tbody></table>
     </div>
     <div id="rankInsights" class="chart-box" style="padding:20px"></div>
   </div>
+
   <div class="panel" id="panel-kumulatif">
     <div style="margin-bottom:20px;font-size:13px;color:var(--muted);background:linear-gradient(135deg,rgba(79,126,248,.06),rgba(245,184,0,.04));border:1px solid rgba(79,126,248,.15);border-radius:var(--r);padding:14px 20px;line-height:1.8">
-      Ranking siswa berdasarkan <strong style="color:var(--gold)">rata-rata skor total</strong> dari semua tryout yang telah diselesaikan (TO1 – TO4).
-      Tryout dengan status <em>absen</em> atau <em>tidak lengkap</em> tidak dihitung dalam rata-rata — sehingga perbandingan lebih adil antar siswa.
+      Ranking siswa berdasarkan <strong style="color:var(--gold)">rata-rata skor total</strong> dari semua tryout yang telah diselesaikan.
+      Tryout dengan status <em>absen</em> tidak dihitung dalam rata-rata.
       <span style="color:var(--warn)">*</span> menandakan skor tryout tidak lengkap.
     </div>
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Ranking Kumulatif — Rata-rata Skor Total (TO1 – TO4)</div></div>
+      <div class="sec-head"><div class="sec-title">Ranking Kumulatif — Rata-rata Skor Total</div></div>
       <div class="chart-box" style="overflow-x:auto;margin-bottom:20px">
-        <table class="rank-table">
-          <thead><tr><th>#</th><th>Nama Siswa</th><th style="text-align:center">TO 1</th><th style="text-align:center">TO 2</th><th style="text-align:center">TO 3</th><th style="text-align:center">TO 4</th><th style="text-align:center">Ikut</th><th style="text-align:center">Rata-rata</th><th style="text-align:center">Terbaik</th><th style="text-align:center">Terendah</th><th style="text-align:center">Lulus/Ikut</th></tr></thead>
-          <tbody id="kumulatifBody"></tbody>
-        </table>
+        <table class="rank-table"><thead id="kumulatifHead"></thead><tbody id="kumulatifBody"></tbody></table>
       </div>
     </div>
     <div class="sec">
-      <div class="sec-head"><div class="sec-title">Perbandingan Rata-rata Skor Total — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
+      <div class="sec-head"><div class="sec-title">Perbandingan Rata-rata Skor — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
       <div class="chart-box"><div class="chart-canvas-wrap"><canvas id="chartKumulatif"></canvas></div></div>
     </div>
     <div id="kumulatifInsights" class="chart-box" style="padding:20px"></div>
   </div>
+
+  <div class="panel" id="panel-toefl">
+    <div class="rank-filter" id="toeflFilter"></div>
+    <div class="chart-box" style="overflow-x:auto" id="toeflContent"></div>
+  </div>
+
+  <div class="panel" id="panel-jasmani">
+    <div class="rank-filter" id="jasmaniFilter"></div>
+    <div class="chart-box" style="overflow-x:auto" id="jasmaniContent"></div>
+  </div>
+
+  <div class="panel" id="panel-psiko">
+    <div class="rank-filter" id="psikoFilter"></div>
+    <div class="chart-box" style="overflow-x:auto" id="psikoContent"></div>
+  </div>
 </div>
 
-<script>
-const SKD={TWK:65,TIU:80,TKP:166,Total:311};
-const MAX={TWK:150,TIU:175,TKP:225,Total:550};
-const STUDENTS=[
-  {nama:'SALFA',color:'#60A5FA',TO1:{TWK:65,TIU:90,TKP:201,Total:356},TO2:{TWK:75,TIU:125,TKP:205,Total:405},TO3:{TWK:70,TIU:95,TKP:204,Total:369},TO4:{TWK:85,TIU:90,TKP:183,Total:358}},
-  {nama:'DILLAH',color:'#F472B6',TO1:{TWK:85,TIU:85,TKP:203,Total:373},TO2:{TWK:95,TIU:140,TKP:198,Total:433},TO3:{TWK:100,TIU:130,TKP:202,Total:432},TO4:{TWK:100,TIU:80,TKP:196,Total:376}},
-  {nama:'EHUD',color:'#2DD4BF',TO1:{TWK:70,TIU:55,TKP:194,Total:319},TO2:{TWK:50,TIU:90,TKP:194,Total:334},TO3:{TWK:80,TIU:40,TKP:175,Total:295},TO4:{TWK:90,TIU:100,TKP:177,Total:367}},
-  {nama:'DHEA',color:'#FBBF24',TO1:{TWK:85,TIU:140,TKP:202,Total:427},TO2:{TWK:100,TIU:145,TKP:202,Total:447},TO3:{TWK:85,TIU:160,TKP:208,Total:453},TO4:{TWK:115,TIU:130,TKP:190,Total:435}},
-  {nama:'FEBHY',color:'#A78BFA',TO1:{TWK:105,TIU:90,TKP:216,Total:411},TO2:null,TO3:{TWK:115,TIU:100,TKP:196,Total:411},TO4:{TWK:100,TIU:105,TKP:184,Total:389}},
-  {nama:'LINGGA',color:'#4ADE80',TO1:{TWK:100,TIU:105,TKP:191,Total:396},TO2:{TWK:100,TIU:135,TKP:197,Total:432},TO3:{TWK:95,TIU:140,TKP:201,Total:436},TO4:{TWK:105,TIU:125,TKP:196,Total:426}},
-  {nama:'FAJAR',color:'#FB923C',TO1:{TWK:105,TIU:130,TKP:205,Total:440},TO2:{TWK:105,TIU:155,TKP:197,Total:457},TO3:{TWK:80,TIU:110,TKP:202,Total:392},TO4:{TWK:105,TIU:125,TKP:199,Total:429}},
-  {nama:'PUTU CINTA',color:'#F87171',TO1:{TWK:25,TIU:55,TKP:178,Total:258},TO2:{TWK:50,TIU:105,TKP:193,Total:348},TO3:{TWK:95,TIU:110,TKP:205,Total:410},TO4:{TWK:65,TIU:65,TKP:169,Total:299}},
-  {nama:'AUREL',color:'#A3E635',TO1:{TWK:85,TIU:85,TKP:202,Total:372},TO2:{TWK:75,TIU:120,TKP:194,Total:389},TO3:{TWK:75,TIU:85,TKP:192,Total:352},TO4:{TWK:105,TIU:90,TKP:188,Total:383}},
-  {nama:'DIDAN',color:'#F43F5E',TO1:{TWK:80,TIU:130,TKP:199,Total:409},TO2:{TWK:100,TIU:130,TKP:187,Total:417},TO3:{TWK:75,TIU:110,TKP:193,Total:378},TO4:{TWK:100,TIU:105,TKP:190,Total:395}},
-  {nama:'AGIL',color:'#6366F1',TO1:{TWK:80,TIU:80,TKP:201,Total:361},TO2:{TWK:85,TIU:90,TKP:200,Total:375},TO3:null,TO4:{TWK:100,TIU:90,TKP:168,Total:358}},
-  {nama:'GITA',color:'#E879F9',TO1:{TWK:90,TIU:145,TKP:208,Total:443},TO2:{TWK:115,TIU:120,TKP:204,Total:439},TO3:{TWK:110,TIU:140,TKP:206,Total:456},TO4:{TWK:135,TIU:135,TKP:194,Total:464}}
-];
-
-function isPass(d){return d&&!d.incomplete&&d.TWK>=SKD.TWK&&d.TIU>=SKD.TIU&&d.TKP>=SKD.TKP}
-function getTO(s,n){return s['TO'+n]}
-function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2)}
-
-function switchTab(id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panels=['overview','siswa','ranking','kumulatif'];
-  document.querySelectorAll('.tab')[panels.indexOf(id)].classList.add('active');
-  document.getElementById('panel-'+id).classList.add('active');
-}
-
-Chart.defaults.color='#6B7280';
-Chart.defaults.font.family='Poppins';
-Chart.defaults.plugins.legend.labels.boxWidth=10;
-Chart.defaults.plugins.legend.labels.usePointStyle=true;
-Chart.defaults.plugins.tooltip.backgroundColor='#0D1529';
-Chart.defaults.plugins.tooltip.borderColor='rgba(255,255,255,0.1)';
-Chart.defaults.plugins.tooltip.borderWidth=1;
-Chart.defaults.plugins.tooltip.padding=10;
-
-function buildTrend(){
-  const labels=['Tryout 1','Tryout 2','Tryout 3','Tryout 4'];
-  const datasets=STUDENTS.map(s=>({
-    label:s.nama,
-    data:[1,2,3,4].map(n=>{const d=getTO(s,n);return(d&&!d.incomplete)?d.Total:null}),
-    borderColor:s.color,backgroundColor:s.color+'22',borderWidth:2,
-    pointBackgroundColor:s.color,pointRadius:4,pointHoverRadius:7,tension:.35,spanGaps:false
-  }));
-  datasets.push({label:'Ambang Min (311)',data:[311,311,311,311],borderColor:'#F59E0B',borderWidth:1.5,borderDash:[5,4],pointRadius:0,fill:false});
-  new Chart(document.getElementById('chartTrend'),{type:'line',data:{labels,datasets},options:{
-    responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-    scales:{y:{min:50,max:510,grid:{color:'rgba(255,255,255,.04)'},ticks:{stepSize:50},title:{display:true,text:'Skor Total'}},x:{grid:{color:'rgba(255,255,255,.04)'}}},
-    plugins:{legend:{position:'right',labels:{padding:12,font:{size:11}}}}
-  }});
-}
-
-let chartTWK,chartTIU,chartTKP;
-function buildSubCharts(toNum){
-  const names=STUDENTS.map(s=>s.nama.split(' ')[0]);
-  const get=(k)=>STUDENTS.map(s=>{const d=getTO(s,toNum);return(d&&!d.incomplete)?d[k]:null});
-  const mkColor=(vals,min,color)=>vals.map(v=>v===null?'#2D3A5A':v>=min?color+'BB':'#EF444488');
-  const opts=(label,minVal,maxVal,color)=>({
-    type:'bar',
-    data:{labels:names,datasets:[
-      {type:'line',label:'Ambang Min',data:Array(names.length).fill(minVal),borderColor:'#F59E0B',borderWidth:1.5,borderDash:[5,4],pointRadius:0,fill:false,order:0},
-      {type:'bar',data:get(label),backgroundColor:mkColor(get(label),minVal,color),borderRadius:4,borderSkipped:false,order:1}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.type==='line'?`Ambang: ${minVal}`:`${c.parsed.y} / ${maxVal}`}}},
-      scales:{y:{min:0,max:maxVal,grid:{color:'rgba(255,255,255,.04)'}},x:{grid:{display:false},ticks:{font:{size:10}}}}}
-  });
-  if(chartTWK)chartTWK.destroy();
-  if(chartTIU)chartTIU.destroy();
-  if(chartTKP)chartTKP.destroy();
-  chartTWK=new Chart(document.getElementById('chartTWK'),opts('TWK',65,150,'#4F7EF8'));
-  chartTIU=new Chart(document.getElementById('chartTIU'),opts('TIU',80,175,'#10B981'));
-  chartTKP=new Chart(document.getElementById('chartTKP'),opts('TKP',166,225,'#F5B800'));
-}
-function selectSubTO(el,n){
-  el.closest('.rank-filter').querySelectorAll('.rank-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');buildSubCharts(n);
-}
-
-function buildClassTable(){
-  const tb=document.getElementById('classTableBody');
-  STUDENTS.forEach(s=>{
-    let cells=`<td><span style="color:${s.color};font-weight:700">${s.nama}</span></td>`;
-    for(let n=1;n<=4;n++){
-      const d=getTO(s,n);
-      if(!d){cells+=`<td style="color:var(--muted)">—</td><td><span class="status-skip">Absen</span></td>`;continue;}
-      if(d.incomplete){cells+=`<td style="color:var(--warn)">${d.Total}</td><td><span class="badge-incomplete" style="padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700">Tdk Lengkap</span></td>`;continue;}
-      const pass=isPass(d);
-      cells+=`<td class="total-col" style="color:${pass?'#10B981':'#EF4444'}">${d.Total}</td><td><span class="${pass?'status-lulus':'status-gagal'}">${pass?'Lulus':'Gagal'}</span></td>`;
-    }
-    const d1=getTO(s,1),d4=getTO(s,4);
-    let trend='—';
-    if(d1&&d4&&!d1.incomplete){const delta=d4.Total-d1.Total;trend=delta>0?`<span class="delta-up">▲ +${delta}</span>`:delta<0?`<span class="delta-dn">▼ ${delta}</span>`:`<span class="delta-flat">→ 0</span>`;}
-    cells+=`<td>${trend}</td>`;
-    const row=document.createElement('tr');row.innerHTML=cells;tb.appendChild(row);
-  });
-}
-
-let profileCharts=[];
-function buildStudentGrid(){
-  const grid=document.getElementById('studentGrid');
-  STUDENTS.forEach((s,i)=>{
-    const btn=document.createElement('div');
-    btn.className='stu-btn'+(i===0?' active':'');
-    btn.innerHTML=`<div class="stu-avatar" style="background:${s.color}22;border:2px solid ${s.color}44;color:${s.color}">${initials(s.nama)}</div><div class="stu-name">${s.nama}</div><div class="stu-score">${s.TO4?s.TO4.Total:'—'} pts TO4</div>`;
-    btn.onclick=()=>{document.querySelectorAll('.stu-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderProfile(i);};
-    grid.appendChild(btn);
-  });
-  renderProfile(0);
-}
-
-function renderProfile(idx){
-  profileCharts.forEach(c=>c.destroy());profileCharts=[];
-  const s=STUDENTS[idx];
-  const pass4=isPass(s.TO4);
-  let toCells='';
-  for(let n=1;n<=4;n++){
-    const d=getTO(s,n);
-    if(!d){toCells+=`<div class="to-cell"><div class="to-label">Tryout ${n}</div><div class="to-total" style="color:var(--muted)">—</div><div class="to-subs">Tidak hadir</div><span class="to-badge badge-skip">Absen</span></div>`;}
-    else if(d.incomplete){toCells+=`<div class="to-cell"><div class="to-label">Tryout ${n}</div><div class="to-total" style="color:var(--warn)">${d.Total}</div><div class="to-subs">TWK:${d.TWK} · TIU:${d.TIU}<br>TKP:${d.TKP}</div><span class="to-badge badge-incomplete">Tidak Lengkap</span></div>`;}
-    else{const p=isPass(d);const fails=['TWK','TIU','TKP'].filter(k=>d[k]<SKD[k]);toCells+=`<div class="to-cell"><div class="to-label">Tryout ${n}</div><div class="to-total" style="color:${p?'#10B981':'#EF4444'}">${d.Total}</div><div class="to-subs" style="font-size:11px">TWK:<b style="color:${d.TWK>=SKD.TWK?'#10B981':'#EF4444'}">${d.TWK}</b> · TIU:<b style="color:${d.TIU>=SKD.TIU?'#10B981':'#EF4444'}">${d.TIU}</b><br>TKP:<b style="color:${d.TKP>=SKD.TKP?'#10B981':'#EF4444'}">${d.TKP}</b></div><span class="to-badge ${p?'badge-pass':'badge-fail'}">${p?'Lulus':'Gagal'+(fails.length?' ('+fails.join(',')+')'  :'')}</span></div>`;}
-  }
-  document.getElementById('profileContent').innerHTML=`
-  <div class="profile-card">
-    <div class="profile-header">
-      <div class="profile-avatar" style="background:${s.color}22;border:2px solid ${s.color};color:${s.color}">${initials(s.nama)}</div>
-      <div class="profile-info"><h2 style="color:${s.color}">${s.nama}</h2><p>Siswa Bimbel D'Ajiks Akademi &nbsp;·&nbsp; ${pass4?'<span style="color:#10B981;font-weight:700">✅ Lulus threshold SKD TO4</span>':'<span style="color:#EF4444;font-weight:700">⚠️ Belum lulus semua threshold TO4</span>'}</p></div>
-    </div>
-    <div class="to-row">${toCells}</div>
-    <div class="profile-charts">
-      <div class="chart-box"><h3>Tren Skor — TO1 hingga TO4</h3><div style="position:relative;height:220px"><canvas id="chartProfile"></canvas></div></div>
-      <div class="chart-box"><h3>Profil Sub-Sesi (TO4)</h3><div style="position:relative;height:220px"><canvas id="chartRadar"></canvas></div></div>
-    </div>
-    <div class="insight-box" id="insightBox"></div>
-  </div>`;
-  const labels=['TO1','TO2','TO3','TO4'];
-  const totals=labels.map((_,i)=>{const d=getTO(s,i+1);return(d&&!d.incomplete)?d.Total:null});
-  const twks=labels.map((_,i)=>{const d=getTO(s,i+1);return(d&&!d.incomplete)?d.TWK:null});
-  const tius=labels.map((_,i)=>{const d=getTO(s,i+1);return(d&&!d.incomplete)?d.TIU:null});
-  const tkps=labels.map((_,i)=>{const d=getTO(s,i+1);return(d&&!d.incomplete)?d.TKP:null});
-  profileCharts.push(new Chart(document.getElementById('chartProfile'),{type:'line',data:{labels,datasets:[
-    {label:'Total',data:totals,borderColor:s.color,backgroundColor:s.color+'22',borderWidth:2.5,tension:.35,pointRadius:5,fill:true},
-    {label:'TWK',data:twks,borderColor:'#4F7EF8',borderWidth:1.5,tension:.35,pointRadius:3,borderDash:[3,2]},
-    {label:'TIU',data:tius,borderColor:'#10B981',borderWidth:1.5,tension:.35,pointRadius:3,borderDash:[3,2]},
-    {label:'TKP',data:tkps,borderColor:'#F5B800',borderWidth:1.5,tension:.35,pointRadius:3,borderDash:[3,2]},
-  ]},options:{responsive:true,maintainAspectRatio:false,spanGaps:false,scales:{y:{min:0,max:500,grid:{color:'rgba(255,255,255,.04)'}},x:{grid:{color:'rgba(255,255,255,.04)'}}} ,plugins:{legend:{position:'bottom',labels:{padding:10,font:{size:10}}}}}}));
-  const d4=s.TO4||{TWK:0,TIU:0,TKP:0};
-  profileCharts.push(new Chart(document.getElementById('chartRadar'),{type:'radar',data:{labels:['TWK (maks 150)','TIU (maks 175)','TKP (maks 225)'],datasets:[
-    {label:'Skor TO4',data:[d4.TWK,d4.TIU,d4.TKP],backgroundColor:s.color+'33',borderColor:s.color,borderWidth:2,pointBackgroundColor:s.color},
-    {label:'Ambang SKD',data:[65,80,166],backgroundColor:'rgba(245,158,11,.05)',borderColor:'#F59E0B',borderWidth:1.5,borderDash:[4,3],pointRadius:0},
-  ]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:230,grid:{color:'rgba(255,255,255,.06)'},pointLabels:{font:{size:10}},ticks:{stepSize:50,font:{size:9}}}},plugins:{legend:{position:'bottom',labels:{padding:10,font:{size:10}}}}}}));
-  document.getElementById('insightBox').innerHTML=generateInsight(s);
-}
-
-function generateInsight(s){
-  const d4=s.TO4||{};const pass4=isPass(d4);
-  const nama=s.nama.split(' ')[0];
-  const to1=getTO(s,1);
-  const deltas=[];
-  if(to1&&!to1.incomplete)['TWK','TIU','TKP'].forEach(k=>deltas.push({k,v:d4[k]-to1[k]}));
-  const best=deltas.length?[...deltas].sort((a,b)=>b.v-a.v)[0]:null;
-  const worst=deltas.length?[...deltas].sort((a,b)=>a.v-b.v)[0]:null;
-  const PERSONAL={};
-  PERSONAL['GITA']=`🏆 <strong>${nama} adalah top performer kelas!</strong> Skor TO4 (464) tertinggi secara konsisten sejak TO1. TWK naik tajam dari 90 → 135 — sangat kompetitif untuk seleksi IPDN. Pertahankan momentum ini.`;
-  PERSONAL['PUTU CINTA']=`⚡ <strong>Perjalanan luar biasa, ${nama}!</strong> Dari TO1 yang tidak lengkap, perkembangan ke TO3 (410) membuktikan kamu bisa. TIU di TO4 turun ke <strong>65 — di bawah ambang 80</strong>. Latihan TIU intensif adalah prioritas utama sekarang.`;
-  PERSONAL['EHUD']=`📉 <strong>Volatilitas TIU perlu dijaga, ${nama}.</strong> TIU sempat jatuh ke 40 di TO3 lalu naik ke 100 di TO4 — fluktuasi besar. Total membaik dari 319 → 367. Kunci: konsistensi antar sesi, bukan sekadar skor tertinggi sesekali.`;
-  PERSONAL['DILLAH']=`⚠️ <strong>TIU perlu buffer lebih, ${nama}.</strong> TIU TO4 tepat di angka 80 — pas di ambang, tidak ada ruang untuk kesalahan di hari H. TWK-mu terus naik (85→100) dan TKP stabil. Fokus satu: naikkan TIU ke 95+.`;
-  PERSONAL['FAJAR']=`🎯 <strong>${nama} punya skor terbaik kelas di TO2 (457)!</strong> Tapi TO3 drop ke 392. TO4 kembali ke 429. Penyebab fluktuasi ini perlu ditelusuri — apakah faktor kondisi saat tryout? Konsistensi adalah kunci menuju hari H.`;
-  if(PERSONAL[s.nama])return PERSONAL[s.nama];
-  let txt='';
-  if(pass4)txt+=`✅ <strong>${nama} lulus semua threshold SKD di Tryout 4.</strong> `;
-  else{const fails=['TWK','TIU','TKP'].filter(k=>d4[k]<SKD[k]);txt+=`⚠️ <strong>Fokus perkuat ${fails.join(' dan ')}, ${nama}.</strong> `;fails.forEach(k=>txt+=`Skor ${k} (${d4[k]}) masih di bawah ambang ${SKD[k]}. `);}
-  if(best&&best.v>0)txt+=`Sub-sesi terbaik peningkatan sejak TO1: <strong>${best.k} +${best.v} poin</strong>. `;
-  if(worst&&worst.v<0)txt+=`Sub-sesi yang perlu perhatian: <strong>${worst.k} turun ${worst.v} poin</strong> dibanding TO1. `;
-  return txt||`Terus semangat berlatih, ${nama}! Setiap tryout adalah kesempatan belajar.`;
-}
-
-function selectRankTO(el,n){
-  el.closest('.rank-filter').querySelectorAll('.rank-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');buildRanking(n);
-}
-function buildRanking(n){
-  const ranked=STUDENTS.map(s=>{return{s,d:getTO(s,n)}}).filter(x=>x.d&&!x.d.incomplete).sort((a,b)=>b.d.Total-a.d.Total);
-  const skipped=STUDENTS.filter(s=>{const d=getTO(s,n);return!d||d.incomplete});
-  const tb=document.getElementById('rankBody');tb.innerHTML='';
-  ranked.forEach(({s,d},i)=>{
-    const pass=isPass(d);const d1=getTO(s,1);
-    let delta='—';
-    if(d1&&!d1.incomplete){const v=d.Total-d1.Total;delta=v>0?`<span class="delta-up">▲ +${v}</span>`:v<0?`<span class="delta-dn">▼ ${v}</span>`:`<span class="delta-flat">→ 0</span>`;}
-    const nc=i===0?'top1':i===1?'top2':i===2?'top3':'rank-num';
-    const medal=i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':'';
-    tb.innerHTML+=`<tr><td><span class="rank-num ${nc}">${medal}${i+1}</span></td><td><span class="rank-name" onclick="goProfile(${STUDENTS.indexOf(s)})"><span class="dot-sm" style="background:${s.color}"></span>${s.nama}</span></td><td class="${d.TWK>=SKD.TWK?'cell-pass':'cell-fail'}">${d.TWK}</td><td class="${d.TIU>=SKD.TIU?'cell-pass':'cell-fail'}">${d.TIU}</td><td class="${d.TKP>=SKD.TKP?'cell-pass':'cell-fail'}">${d.TKP}</td><td class="total-col" style="color:${pass?'#10B981':'#EF4444'}">${d.Total}</td><td><span class="${pass?'status-lulus':'status-gagal'}">${pass?'✅ Lulus':'❌ Gagal'}</span></td><td>${delta}</td></tr>`;
-  });
-  skipped.forEach(s=>{const d=getTO(s,n);tb.innerHTML+=`<tr><td><span class="rank-num">—</span></td><td><span class="rank-name" style="opacity:.5">${s.nama}</span></td><td colspan="5" style="color:var(--muted);font-size:12px">${d?.incomplete?'Tidak Lengkap':'Tidak Hadir'}</td><td>—</td></tr>`;});
-  const passing=ranked.filter(x=>isPass(x.d));const top=ranked[0];
-  document.getElementById('rankInsights').innerHTML=`<div style="font-size:13px;color:var(--muted);line-height:2"><b style="color:var(--text)">📌 Ringkasan Tryout ${n}:</b> <strong>${passing.length}</strong> dari <strong>${ranked.length}</strong> siswa yang hadir lulus seluruh threshold SKD IPDN.${top?` Top skor: <strong style="color:${top.s.color}">${top.s.nama}</strong> dengan <strong>${top.d.Total} poin</strong>.`:''}<br>${skipped.length>0?`Tidak hadir/tidak lengkap: ${skipped.map(s=>`<strong>${s.nama}</strong>`).join(', ')}.`:'Semua siswa hadir.'}<br><span style="font-size:11px">Klik nama siswa untuk melihat profil lengkap.</span></div>`;
-}
-
-function goProfile(idx){switchTab('siswa');document.querySelectorAll('.stu-btn')[idx].click();window.scrollTo({top:0,behavior:'smooth'});}
-
-let chartKumulatif;
-function buildKumulatif(){
-  const stats=STUDENTS.map(s=>{
-    const scores=[1,2,3,4].map(n=>getTO(s,n)).filter(d=>d&&!d.incomplete);
-    const totals=scores.map(d=>d.Total);
-    const avg=totals.length?Math.round(totals.reduce((a,b)=>a+b,0)/totals.length):0;
-    const best=totals.length?Math.max(...totals):0;
-    const worst=totals.length?Math.min(...totals):0;
-    const passCount=scores.filter(d=>isPass(d)).length;
-    return{s,scores,totals,avg,best,worst,passCount,attended:totals.length};
-  }).sort((a,b)=>b.avg-a.avg);
-
-  let rows='';
-  stats.forEach(({s,avg,best,worst,passCount,attended},i)=>{
-    const nc=i===0?'top1':i===1?'top2':i===2?'top3':'rank-num';
-    const medal=i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':'';
-    const toScores=[1,2,3,4].map(n=>{
-      const d=getTO(s,n);
-      if(!d)return`<td style="color:var(--muted);text-align:center;font-size:12px">—</td>`;
-      if(d.incomplete)return`<td style="color:var(--warn);text-align:center;font-size:12px">${d.Total}<sup>*</sup></td>`;
-      const p=isPass(d);
-      return`<td class="total-col" style="color:${p?'#10B981':'#EF4444'};text-align:center">${d.Total}</td>`;
-    }).join('');
-    const pctColor=passCount===attended&&attended>0?'#10B981':passCount>0?'#F59E0B':'#EF4444';
-    const consistencyLabel=attended===0?'—':passCount===attended?'Konsisten':passCount===0?'Perlu Kerja Keras':`${Math.round(passCount/attended*100)}%`;
-    rows+=`<tr>
-      <td><span class="rank-num ${nc}">${medal}${i+1}</span></td>
-      <td><span class="rank-name" onclick="goProfile(${STUDENTS.indexOf(s)})"><span class="dot-sm" style="background:${s.color}"></span>${s.nama}</span></td>
-      ${toScores}
-      <td style="text-align:center;color:var(--muted);font-weight:600">${attended}/4</td>
-      <td class="total-col" style="color:var(--gold);text-align:center;font-size:16px">${avg}</td>
-      <td style="text-align:center;color:#10B981;font-weight:600">${best}</td>
-      <td style="text-align:center;color:#EF4444;font-weight:600">${worst}</td>
-      <td style="text-align:center"><span style="color:${pctColor};font-weight:700;font-size:12px">${consistencyLabel}</span></td>
-    </tr>`;
-  });
-  document.getElementById('kumulatifBody').innerHTML=rows;
-
-  if(chartKumulatif)chartKumulatif.destroy();
-  chartKumulatif=new Chart(document.getElementById('chartKumulatif'),{
-    type:'bar',
-    data:{
-      labels:stats.map(x=>x.s.nama),
-      datasets:[
-        {type:'line',label:'Ambang Min (311)',data:Array(stats.length).fill(311),borderColor:'#F59E0B',borderWidth:1.5,borderDash:[5,4],pointRadius:0,fill:false,order:0},
-        {type:'bar',label:'Rata-rata Skor',data:stats.map(x=>x.avg),backgroundColor:stats.map(x=>x.s.color+'BB'),borderRadius:6,borderSkipped:false,order:1}
-      ]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{
-        legend:{position:'top',labels:{padding:12,font:{size:11}}},
-        tooltip:{callbacks:{label:c=>c.dataset.type==='line'?'Ambang Min: 311':`Rata-rata: ${c.parsed.y} poin`}}
-      },
-      scales:{
-        y:{min:50,max:510,grid:{color:'rgba(255,255,255,.04)'},ticks:{stepSize:50},title:{display:true,text:'Rata-rata Skor Total'}},
-        x:{grid:{display:false},ticks:{font:{size:11}}}
-      }
-    }
-  });
-
-  const top=stats[0];
-  const allPassAll=stats.filter(x=>x.passCount===x.attended&&x.attended>0);
-  const neverPass=stats.filter(x=>x.passCount===0&&x.attended>0);
-  const avgKelas=Math.round(stats.reduce((a,x)=>a+x.avg,0)/stats.length);
-  document.getElementById('kumulatifInsights').innerHTML=`<div style="font-size:13px;color:var(--muted);line-height:2">
-    <b style="color:var(--text)">📌 Ringkasan Kumulatif (TO1 – TO4):</b>
-    Rata-rata tertinggi dipegang oleh <strong style="color:${top.s.color}">${top.s.nama}</strong> dengan rata-rata <strong>${top.avg} poin</strong> dari ${top.attended} tryout yang diselesaikan.
-    Rata-rata kelas keseluruhan: <strong style="color:var(--gold)">${avgKelas} poin</strong>.
-    ${allPassAll.length>0?`<br>Siswa yang lulus threshold SKD di <em>semua</em> tryout yang diikuti: ${allPassAll.map(x=>`<strong style="color:${x.s.color}">${x.s.nama}</strong>`).join(', ')}.`:''}
-    ${neverPass.length>0?`<br>Siswa yang belum pernah lulus threshold di tryout manapun: ${neverPass.map(x=>`<strong style="color:${x.s.color}">${x.s.nama}</strong>`).join(', ')} — perlu perhatian lebih intensif.`:''}
-    <br><span style="font-size:11px;color:rgba(107,114,128,.7)"><sup>*</sup> Skor bertanda bintang = tryout tidak lengkap, tidak dihitung dalam rata-rata. Klik nama siswa untuk melihat profil lengkap.</span>
-  </div>`;
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  buildTrend();buildSubCharts(1);buildClassTable();buildStudentGrid();buildRanking(4);buildKumulatif();
-});
-</script>
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>
