@@ -126,6 +126,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min
     <div class="tab active" onclick="switchTab('overview')">📊 Overview Kelas</div>
     <div class="tab" onclick="switchTab('siswa')">👤 Profil Per Siswa</div>
     <div class="tab" onclick="switchTab('ranking')">🏆 Ranking & Status</div>
+    <div class="tab" onclick="switchTab('kumulatif')">📋 Ringkasan Kumulatif</div>
   </div>
 </div>
 <div class="content">
@@ -182,6 +183,27 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <div id="rankInsights" class="chart-box" style="padding:20px"></div>
   </div>
+  <div class="panel" id="panel-kumulatif">
+    <div style="margin-bottom:20px;font-size:13px;color:var(--muted);background:linear-gradient(135deg,rgba(79,126,248,.06),rgba(245,184,0,.04));border:1px solid rgba(79,126,248,.15);border-radius:var(--r);padding:14px 20px;line-height:1.8">
+      Ranking siswa berdasarkan <strong style="color:var(--gold)">rata-rata skor total</strong> dari semua tryout yang telah diselesaikan (TO1 – TO4).
+      Tryout dengan status <em>absen</em> atau <em>tidak lengkap</em> tidak dihitung dalam rata-rata — sehingga perbandingan lebih adil antar siswa.
+      <span style="color:var(--warn)">*</span> menandakan skor tryout tidak lengkap.
+    </div>
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Ranking Kumulatif — Rata-rata Skor Total (TO1 – TO4)</div></div>
+      <div class="chart-box" style="overflow-x:auto;margin-bottom:20px">
+        <table class="rank-table">
+          <thead><tr><th>#</th><th>Nama Siswa</th><th style="text-align:center">TO 1</th><th style="text-align:center">TO 2</th><th style="text-align:center">TO 3</th><th style="text-align:center">TO 4</th><th style="text-align:center">Ikut</th><th style="text-align:center">Rata-rata</th><th style="text-align:center">Terbaik</th><th style="text-align:center">Terendah</th><th style="text-align:center">Lulus/Ikut</th></tr></thead>
+          <tbody id="kumulatifBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">Perbandingan Rata-rata Skor Total — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
+      <div class="chart-box"><div class="chart-canvas-wrap"><canvas id="chartKumulatif"></canvas></div></div>
+    </div>
+    <div id="kumulatifInsights" class="chart-box" style="padding:20px"></div>
+  </div>
 </div>
 
 <script>
@@ -209,7 +231,7 @@ function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2)}
 function switchTab(id){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const panels=['overview','siswa','ranking'];
+  const panels=['overview','siswa','ranking','kumulatif'];
   document.querySelectorAll('.tab')[panels.indexOf(id)].classList.add('active');
   document.getElementById('panel-'+id).classList.add('active');
 }
@@ -387,8 +409,83 @@ function buildRanking(n){
 
 function goProfile(idx){switchTab('siswa');document.querySelectorAll('.stu-btn')[idx].click();window.scrollTo({top:0,behavior:'smooth'});}
 
+let chartKumulatif;
+function buildKumulatif(){
+  const stats=STUDENTS.map(s=>{
+    const scores=[1,2,3,4].map(n=>getTO(s,n)).filter(d=>d&&!d.incomplete);
+    const totals=scores.map(d=>d.Total);
+    const avg=totals.length?Math.round(totals.reduce((a,b)=>a+b,0)/totals.length):0;
+    const best=totals.length?Math.max(...totals):0;
+    const worst=totals.length?Math.min(...totals):0;
+    const passCount=scores.filter(d=>isPass(d)).length;
+    return{s,scores,totals,avg,best,worst,passCount,attended:totals.length};
+  }).sort((a,b)=>b.avg-a.avg);
+
+  let rows='';
+  stats.forEach(({s,avg,best,worst,passCount,attended},i)=>{
+    const nc=i===0?'top1':i===1?'top2':i===2?'top3':'rank-num';
+    const medal=i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':'';
+    const toScores=[1,2,3,4].map(n=>{
+      const d=getTO(s,n);
+      if(!d)return`<td style="color:var(--muted);text-align:center;font-size:12px">—</td>`;
+      if(d.incomplete)return`<td style="color:var(--warn);text-align:center;font-size:12px">${d.Total}<sup>*</sup></td>`;
+      const p=isPass(d);
+      return`<td class="total-col" style="color:${p?'#10B981':'#EF4444'};text-align:center">${d.Total}</td>`;
+    }).join('');
+    const pctColor=passCount===attended&&attended>0?'#10B981':passCount>0?'#F59E0B':'#EF4444';
+    const consistencyLabel=attended===0?'—':passCount===attended?'Konsisten':passCount===0?'Perlu Kerja Keras':`${Math.round(passCount/attended*100)}%`;
+    rows+=`<tr>
+      <td><span class="rank-num ${nc}">${medal}${i+1}</span></td>
+      <td><span class="rank-name" onclick="goProfile(${STUDENTS.indexOf(s)})"><span class="dot-sm" style="background:${s.color}"></span>${s.nama}</span></td>
+      ${toScores}
+      <td style="text-align:center;color:var(--muted);font-weight:600">${attended}/4</td>
+      <td class="total-col" style="color:var(--gold);text-align:center;font-size:16px">${avg}</td>
+      <td style="text-align:center;color:#10B981;font-weight:600">${best}</td>
+      <td style="text-align:center;color:#EF4444;font-weight:600">${worst}</td>
+      <td style="text-align:center"><span style="color:${pctColor};font-weight:700;font-size:12px">${consistencyLabel}</span></td>
+    </tr>`;
+  });
+  document.getElementById('kumulatifBody').innerHTML=rows;
+
+  if(chartKumulatif)chartKumulatif.destroy();
+  chartKumulatif=new Chart(document.getElementById('chartKumulatif'),{
+    type:'bar',
+    data:{
+      labels:stats.map(x=>x.s.nama),
+      datasets:[
+        {type:'line',label:'Ambang Min (311)',data:Array(stats.length).fill(311),borderColor:'#F59E0B',borderWidth:1.5,borderDash:[5,4],pointRadius:0,fill:false,order:0},
+        {type:'bar',label:'Rata-rata Skor',data:stats.map(x=>x.avg),backgroundColor:stats.map(x=>x.s.color+'BB'),borderRadius:6,borderSkipped:false,order:1}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top',labels:{padding:12,font:{size:11}}},
+        tooltip:{callbacks:{label:c=>c.dataset.type==='line'?'Ambang Min: 311':`Rata-rata: ${c.parsed.y} poin`}}
+      },
+      scales:{
+        y:{min:50,max:510,grid:{color:'rgba(255,255,255,.04)'},ticks:{stepSize:50},title:{display:true,text:'Rata-rata Skor Total'}},
+        x:{grid:{display:false},ticks:{font:{size:11}}}
+      }
+    }
+  });
+
+  const top=stats[0];
+  const allPassAll=stats.filter(x=>x.passCount===x.attended&&x.attended>0);
+  const neverPass=stats.filter(x=>x.passCount===0&&x.attended>0);
+  const avgKelas=Math.round(stats.reduce((a,x)=>a+x.avg,0)/stats.length);
+  document.getElementById('kumulatifInsights').innerHTML=`<div style="font-size:13px;color:var(--muted);line-height:2">
+    <b style="color:var(--text)">📌 Ringkasan Kumulatif (TO1 – TO4):</b>
+    Rata-rata tertinggi dipegang oleh <strong style="color:${top.s.color}">${top.s.nama}</strong> dengan rata-rata <strong>${top.avg} poin</strong> dari ${top.attended} tryout yang diselesaikan.
+    Rata-rata kelas keseluruhan: <strong style="color:var(--gold)">${avgKelas} poin</strong>.
+    ${allPassAll.length>0?`<br>Siswa yang lulus threshold SKD di <em>semua</em> tryout yang diikuti: ${allPassAll.map(x=>`<strong style="color:${x.s.color}">${x.s.nama}</strong>`).join(', ')}.`:''}
+    ${neverPass.length>0?`<br>Siswa yang belum pernah lulus threshold di tryout manapun: ${neverPass.map(x=>`<strong style="color:${x.s.color}">${x.s.nama}</strong>`).join(', ')} — perlu perhatian lebih intensif.`:''}
+    <br><span style="font-size:11px;color:rgba(107,114,128,.7)"><sup>*</sup> Skor bertanda bintang = tryout tidak lengkap, tidak dihitung dalam rata-rata. Klik nama siswa untuk melihat profil lengkap.</span>
+  </div>`;
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
-  buildTrend();buildSubCharts(1);buildClassTable();buildStudentGrid();buildRanking(4);
+  buildTrend();buildSubCharts(1);buildClassTable();buildStudentGrid();buildRanking(4);buildKumulatif();
 });
 </script>
 </body>
