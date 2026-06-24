@@ -23,7 +23,7 @@ function buildTrend(students, tos) {
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      scales: { y: { min: 50, max: 510, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Skor Total' } }, x: { grid: { color: 'rgba(0,0,0,.05)' } } },
+      scales: { y: { min: 50, max: 510, grid: { color: 'rgba(148,163,184,.07)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Skor Total' } }, x: { grid: { color: 'rgba(148,163,184,.07)' } } },
       plugins: { legend: { position: 'right', labels: { padding: 12, font: { size: 11 } } } }
     }
   });
@@ -33,7 +33,7 @@ function buildSubCharts(students, toNum) {
   ['TWK', 'TIU', 'TKP'].forEach(key => charts[key] && charts[key].destroy());
   const names = students.map(s => s.nama.split(' ')[0]);
   const get = k => students.map(s => { const d = s.skd[toNum]; return (d && !d.incomplete) ? d[k] : null; });
-  const mkColor = (vals, min, color) => vals.map(v => v === null ? '#E2E8F0' : v >= min ? color + 'BB' : '#EF444488');
+  const mkColor = (vals, min, color) => vals.map(v => v === null ? '#1E3A5F' : v >= min ? color + 'BB' : '#EF444455');
 
   const opts = (key, min, max, color) => ({
     type: 'bar',
@@ -46,7 +46,7 @@ function buildSubCharts(students, toNum) {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.type === 'line' ? `Ambang: ${min}` : `${c.parsed.y} / ${max}` } } },
-      scales: { y: { min: 0, max, grid: { color: 'rgba(0,0,0,.05)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } }
+      scales: { y: { min: 0, max, grid: { color: 'rgba(148,163,184,.07)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } }
     }
   });
 
