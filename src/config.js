@@ -66,6 +66,35 @@ export function calcJasmani(gender, data) {
 export const GRADE_LABELS = { A: 'Baik Sekali', B: 'Cukup / Batas Aman', C: 'Kurang / Rawan', TMS: 'Tidak Memenuhi Syarat' };
 export const GRADE_COLORS = { A: '#10B981', B: '#F59E0B', C: '#FB923C', TMS: '#EF4444' };
 
+// TOEFL ITP Conversion (asumsi tiap section maks 100, total maks 300)
+// Section scale: 0-100 → 31-68 (TOEFL ITP section range)
+// ITP Total = round(avg_section_scaled × 10) → 310-677
+export const TOEFL_SECTION_MAX = 100;
+export const TOEFL_ITP_BANDS = [
+  { min: 550, label: 'Mahir',          grade: 'A', color: '#10B981', desc: 'Standar internasional — siap seleksi kedinasan level tinggi' },
+  { min: 500, label: 'Menengah Atas',  grade: 'B', color: '#4ADE80', desc: 'Baik — memenuhi sebagian besar syarat kedinasan' },
+  { min: 450, label: 'Menengah',       grade: 'C', color: '#F59E0B', desc: 'Ambang minimum kedinasan umum Indonesia' },
+  { min: 400, label: 'Dasar Plus',     grade: 'D', color: '#FB923C', desc: 'Perlu peningkatan sebelum seleksi' },
+  { min: 0,   label: 'Dasar',          grade: 'E', color: '#EF4444', desc: 'Perlu latihan intensif di semua section' },
+];
+export const TOEFL_MIN_KEDINASAN = 450;
+
+export function calcTOEFL(data) {
+  const toSection = (raw) => {
+    if (raw == null) return null;
+    return Math.max(31, Math.min(68, Math.round((raw / TOEFL_SECTION_MAX) * 37 + 31)));
+  };
+  const l = toSection(data.listening);
+  const r = toSection(data.reading);
+  const w = toSection(data.writing);
+  const defined = [l, r, w].filter(v => v !== null);
+  if (!defined.length) return null;
+  const avgScaled = defined.reduce((a, b) => a + b, 0) / defined.length;
+  const itp = Math.max(310, Math.min(677, Math.round(avgScaled * 10)));
+  const band = TOEFL_ITP_BANDS.find(b => itp >= b.min) || TOEFL_ITP_BANDS[TOEFL_ITP_BANDS.length - 1];
+  return { l, r, w, itp, grade: band.grade, label: band.label, color: band.color, desc: band.desc, passKedinasan: itp >= TOEFL_MIN_KEDINASAN };
+}
+
 export const PERSONAL_INSIGHTS = {
   'GITA':       `🏆 <strong>GITA adalah top performer kelas!</strong> Skor TO4 (464) tertinggi secara konsisten sejak TO1. TWK naik tajam dari 90 → 135 — sangat kompetitif untuk seleksi IPDN.`,
   'PUTU CINTA': `⚡ <strong>Perjalanan luar biasa, PUTU CINTA!</strong> Perkembangan signifikan dari TO1 ke TO3 (410) membuktikan kerja keras. Fokus naikkan TIU agar konsisten di atas ambang 80.`,
