@@ -93,7 +93,7 @@ function renderProfile(students, idx, tos) {
       { label: 'TIU', data: tius, borderColor: '#10B981', borderWidth: 1.5, tension: .35, pointRadius: 3, borderDash: [3, 2] },
       { label: 'TKP', data: tkps, borderColor: '#F5B800', borderWidth: 1.5, tension: .35, pointRadius: 3, borderDash: [3, 2] }
     ]},
-    options: { responsive: true, maintainAspectRatio: false, spanGaps: false, scales: { y: { min: 0, max: 500, grid: { color: 'rgba(148,163,184,.07)' } }, x: { grid: { color: 'rgba(148,163,184,.07)' } } }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 } } } } }
+    options: { responsive: true, maintainAspectRatio: false, spanGaps: false, scales: { y: { min: 0, max: 500, grid: { color: 'rgba(255,255,255,.04)' } }, x: { grid: { color: 'rgba(255,255,255,.04)' } } }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 } } } } }
   }));
 
   const dLatest = latestTO ? (s.skd[latestTO] || { TWK: 0, TIU: 0, TKP: 0 }) : { TWK: 0, TIU: 0, TKP: 0 };
@@ -103,7 +103,7 @@ function renderProfile(students, idx, tos) {
       { label: `Skor TO${latestTO}`, data: [dLatest.TWK, dLatest.TIU, dLatest.TKP], backgroundColor: s.color + '33', borderColor: s.color, borderWidth: 2, pointBackgroundColor: s.color },
       { label: 'Ambang SKD', data: [65, 80, 166], backgroundColor: 'rgba(245,158,11,.05)', borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [4, 3], pointRadius: 0 }
     ]},
-    options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 230, grid: { color: 'rgba(148,163,184,.08)' }, pointLabels: { font: { size: 10 }, color: '#64748B' }, ticks: { stepSize: 50, font: { size: 9 }, backdropColor: 'transparent', color: '#64748B' } } }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 } } } } }
+    options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 230, grid: { color: 'rgba(255,255,255,.06)' }, pointLabels: { font: { size: 10 } }, ticks: { stepSize: 50, font: { size: 9 } } } }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 } } } } }
   }));
 }
 

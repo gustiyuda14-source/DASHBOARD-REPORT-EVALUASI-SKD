@@ -55,7 +55,7 @@ export function init(students) {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { position: 'top', labels: { padding: 12, font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.type === 'line' ? 'Ambang Min: 311' : `Rata-rata: ${c.parsed.y} poin` } } },
-      scales: { y: { min: 50, max: 510, grid: { color: 'rgba(148,163,184,.07)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Rata-rata Skor Total' } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } }
+      scales: { y: { min: 50, max: 510, grid: { color: 'rgba(255,255,255,.04)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Rata-rata Skor Total' } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } }
     }
   });
 

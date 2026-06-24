@@ -23,7 +23,7 @@ function buildTrend(students, tos) {
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      scales: { y: { min: 50, max: 510, grid: { color: 'rgba(148,163,184,.07)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Skor Total' } }, x: { grid: { color: 'rgba(148,163,184,.07)' } } },
+      scales: { y: { min: 50, max: 510, grid: { color: 'rgba(255,255,255,.04)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Skor Total' } }, x: { grid: { color: 'rgba(255,255,255,.04)' } } },
       plugins: { legend: { position: 'right', labels: { padding: 12, font: { size: 11 } } } }
     }
   });
@@ -63,7 +63,7 @@ function buildSubCharts(students, toNum) {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.parsed.y ?? '—'} / ${max}` } } },
-      scales: { y: { min: 0, max, grid: { color: 'rgba(148,163,184,.07)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } }
+      scales: { y: { min: 0, max, grid: { color: 'rgba(255,255,255,.04)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } }
     }
   });
 
