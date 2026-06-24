@@ -128,5 +128,9 @@ export async function fetchAllData() {
   mergeTOEFL(students, parseCSVText(toeflText));
   mergeJASMANI(students, parseCSVText(jasmaniText));
   mergePSIKO(students, parseCSVText(psikoText));
+  students.sort((a, b) => {
+    if (a.gender !== b.gender) return a.gender === 'L' ? -1 : 1;
+    return a.nama.localeCompare(b.nama, 'id');
+  });
   return students;
 }
