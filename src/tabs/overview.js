@@ -33,6 +33,16 @@ function buildSubCharts(students, toNum) {
   ['TWK', 'TIU', 'TKP'].forEach(key => charts[key] && charts[key].destroy());
   const names = students.map(s => s.nama.split(' ')[0]);
   const get = k => students.map(s => { const d = s.skd[toNum]; return (d && !d.incomplete) ? d[k] : null; });
+
+  // DEBUG: tampilkan data di DOM untuk diagnosa
+  const dbg = document.getElementById('subChartDebug');
+  if (dbg) {
+    const sample = students.slice(0, 3).map(s => {
+      const d = s.skd[toNum];
+      return `${s.nama.split(' ')[0]}: skd[${toNum}]=${d ? `{TWK:${d.TWK},TIU:${d.TIU},TKP:${d.TKP},inc:${d.incomplete}}` : 'null'}`;
+    }).join(' | ');
+    dbg.textContent = `[DEBUG toNum="${toNum}" type=${typeof toNum}] ${sample}`;
+  }
   const mkColor = (vals, min, color) => vals.map(v => v === null ? 'rgba(148,163,184,0.12)' : v >= min ? color + 'DD' : 'rgba(239,68,68,0.75)');
 
   const opts = (key, min, max, color) => ({
