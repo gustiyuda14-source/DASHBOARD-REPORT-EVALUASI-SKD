@@ -196,7 +196,7 @@ function renderKumulatif(sessions) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { position: 'top', labels: { padding: 10, font: { size: 11 } } } },
       scales: {
-        y: { min: 300, max: 700, grid: { color: 'rgba(255,255,255,.04)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Skor ITP' } },
+        y: { min: 300, max: 700, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { stepSize: 50 }, title: { display: true, text: 'Skor ITP' } },
         x: { grid: { display: false }, ticks: { font: { size: 11 } } }
       }
     }

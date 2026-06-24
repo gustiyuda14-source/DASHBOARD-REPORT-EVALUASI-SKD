@@ -9,14 +9,18 @@ import { init as initTOEFL } from './tabs/toefl.js';
 import { init as initJASMANI } from './tabs/jasmani.js';
 import { init as initPSIKO } from './tabs/psiko.js';
 
-Chart.defaults.color = '#6B7280';
+Chart.defaults.color = '#64748B';
 Chart.defaults.font.family = 'Poppins';
 Chart.defaults.plugins.legend.labels.boxWidth = 10;
 Chart.defaults.plugins.legend.labels.usePointStyle = true;
-Chart.defaults.plugins.tooltip.backgroundColor = '#0D1529';
-Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.1)';
+Chart.defaults.plugins.tooltip.backgroundColor = '#1E293B';
+Chart.defaults.plugins.tooltip.titleColor = '#F1F5F9';
+Chart.defaults.plugins.tooltip.bodyColor = '#94A3B8';
+Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.08)';
 Chart.defaults.plugins.tooltip.borderWidth = 1;
 Chart.defaults.plugins.tooltip.padding = 10;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.scale.grid = { color: 'rgba(0,0,0,0.05)' };
 
 const TABS = ['overview', 'siswa', 'ranking', 'kumulatif', 'toefl', 'jasmani', 'psiko'];
 let _students = [];
