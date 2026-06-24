@@ -66,10 +66,10 @@ export function calcJasmani(gender, data) {
 export const GRADE_LABELS = { A: 'Baik Sekali', B: 'Cukup / Batas Aman', C: 'Kurang / Rawan', TMS: 'Tidak Memenuhi Syarat' };
 export const GRADE_COLORS = { A: '#10B981', B: '#F59E0B', C: '#FB923C', TMS: '#EF4444' };
 
-// TOEFL ITP Conversion (asumsi tiap section maks 100, total maks 300)
-// Section scale: 0-100 → 31-68 (TOEFL ITP section range)
-// ITP Total = round(avg_section_scaled × 10) → 310-677
-export const TOEFL_SECTION_MAX = 100;
+// TOEFL ITP — input section scaled score langsung dari laporan resmi (31–68 per section)
+// ITP Total = round(avg_scaled × 10) → 310–677
+// Section 3 = "Structure and Written Expression" (diinput sebagai kolom WRITING di Google Sheets)
+export const TOEFL_SECTION_RANGE = { min: 31, max: 68 };
 export const TOEFL_ITP_BANDS = [
   { min: 550, label: 'Mahir',          grade: 'A', color: '#10B981', desc: 'Standar internasional — siap seleksi kedinasan level tinggi' },
   { min: 500, label: 'Menengah Atas',  grade: 'B', color: '#4ADE80', desc: 'Baik — memenuhi sebagian besar syarat kedinasan' },
@@ -80,13 +80,11 @@ export const TOEFL_ITP_BANDS = [
 export const TOEFL_MIN_KEDINASAN = 450;
 
 export function calcTOEFL(data) {
-  const toSection = (raw) => {
-    if (raw == null) return null;
-    return Math.max(31, Math.min(68, Math.round((raw / TOEFL_SECTION_MAX) * 37 + 31)));
-  };
-  const l = toSection(data.listening);
-  const r = toSection(data.reading);
-  const w = toSection(data.writing);
+  // Terima section scaled score (31–68) langsung — tidak ada konversi
+  const clamp = v => v == null ? null : Math.max(31, Math.min(68, Math.round(v)));
+  const l = clamp(data.listening);
+  const r = clamp(data.reading);
+  const w = clamp(data.writing); // Structure and Written Expression
   const defined = [l, r, w].filter(v => v !== null);
   if (!defined.length) return null;
   const avgScaled = defined.reduce((a, b) => a + b, 0) / defined.length;
