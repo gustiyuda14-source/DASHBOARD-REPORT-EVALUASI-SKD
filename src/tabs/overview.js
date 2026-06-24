@@ -33,7 +33,7 @@ function buildSubCharts(students, toNum) {
   ['TWK', 'TIU', 'TKP'].forEach(key => charts[key] && charts[key].destroy());
   const names = students.map(s => s.nama.split(' ')[0]);
   const get = k => students.map(s => { const d = s.skd[toNum]; return (d && !d.incomplete) ? d[k] : null; });
-  const mkColor = (vals, min, color) => vals.map(v => v === null ? '#1E3A5F' : v >= min ? color + 'BB' : '#EF444455');
+  const mkColor = (vals, min, color) => vals.map(v => v === null ? 'rgba(148,163,184,0.12)' : v >= min ? color + 'DD' : 'rgba(239,68,68,0.75)');
 
   const opts = (key, min, max, color) => ({
     type: 'bar',
