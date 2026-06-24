@@ -31,31 +31,38 @@ function buildTrend(students, tos) {
 
 function buildSubCharts(students, toNum) {
   ['TWK', 'TIU', 'TKP'].forEach(key => charts[key] && charts[key].destroy());
+  const dbg = document.getElementById('subChartDebug');
+  if (dbg) dbg.textContent = '';
+
   const names = students.map(s => s.nama.split(' ')[0]);
   const get = k => students.map(s => { const d = s.skd[toNum]; return (d && !d.incomplete) ? d[k] : null; });
+  const mkColor = (vals, min, color) => vals.map(v =>
+    v === null ? 'rgba(148,163,184,0.15)' : v >= min ? color + 'CC' : 'rgba(239,68,68,0.80)'
+  );
 
-  // DEBUG: tampilkan data di DOM untuk diagnosa
-  const dbg = document.getElementById('subChartDebug');
-  if (dbg) {
-    const sample = students.slice(0, 3).map(s => {
-      const d = s.skd[toNum];
-      return `${s.nama.split(' ')[0]}: skd[${toNum}]=${d ? `{TWK:${d.TWK},TIU:${d.TIU},TKP:${d.TKP},inc:${d.incomplete}}` : 'null'}`;
-    }).join(' | ');
-    dbg.textContent = `[DEBUG toNum="${toNum}" type=${typeof toNum}] ${sample}`;
-  }
-  const mkColor = (vals, min, color) => vals.map(v => v === null ? 'rgba(148,163,184,0.12)' : v >= min ? color + 'DD' : 'rgba(239,68,68,0.75)');
+  const makeLine = min => ({
+    id: 'threshLine',
+    afterDraw(chart) {
+      const { ctx, chartArea: a, scales: { y } } = chart;
+      const py = y.getPixelForValue(min);
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(a.left, py); ctx.lineTo(a.right, py);
+      ctx.strokeStyle = '#F59E0B'; ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]); ctx.stroke(); ctx.restore();
+    }
+  });
 
   const opts = (key, min, max, color) => ({
     type: 'bar',
+    plugins: [makeLine(min)],
     data: {
-      labels: names, datasets: [
-        { type: 'line', label: 'Ambang Min', data: Array(names.length).fill(min), borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, fill: false, order: 0 },
-        { type: 'bar', data: get(key), backgroundColor: mkColor(get(key), min, color), borderRadius: 4, borderSkipped: false, order: 1 }
-      ]
+      labels: names,
+      datasets: [{ data: get(key), backgroundColor: mkColor(get(key), min, color), borderRadius: 3 }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.type === 'line' ? `Ambang: ${min}` : `${c.parsed.y} / ${max}` } } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.parsed.y ?? '—'} / ${max}` } } },
       scales: { y: { min: 0, max, grid: { color: 'rgba(148,163,184,.07)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } }
     }
   });
