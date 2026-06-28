@@ -1,9 +1,17 @@
 import Chart from 'chart.js/auto';
-import { SKD } from '../config.js';
+import { SKD, MAX } from '../config.js';
 import { isPass, initials, activeTOs, genderBadge } from '../utils.js';
 import { PERSONAL_INSIGHTS } from '../config.js';
 
-let profileCharts = [];
+let _students = [];
+let _radarChart = null;
+
+const SUB = [
+  { key: 'TWK', label: 'TWK — Wawasan Kebangsaan', color: '#4F7EF8', min: SKD.TWK, max: MAX.TWK },
+  { key: 'TIU', label: 'TIU — Intelegensia Umum',  color: '#10B981', min: SKD.TIU, max: MAX.TIU },
+  { key: 'TKP', label: 'TKP — Karakteristik Pribadi', color: '#F5B800', min: SKD.TKP, max: MAX.TKP },
+];
+const GOOD_PCT = 0.72; // ≥72% of max = "sudah baik"
 
 function generateInsight(s, tos) {
   if (PERSONAL_INSIGHTS[s.nama]) return PERSONAL_INSIGHTS[s.nama];
@@ -15,113 +23,256 @@ function generateInsight(s, tos) {
   let txt = '';
   if (pass) txt += `✅ <strong>${s.nama.split(' ')[0]} lulus semua threshold SKD di Tryout ${latestTO}.</strong> `;
   else {
-    const fails = ['TWK', 'TIU', 'TKP'].filter(k => d[k] < SKD[k]);
+    const fails = SUB.filter(sub => d[sub.key] < sub.min).map(sub => sub.key);
     txt += `⚠️ <strong>Fokus perkuat ${fails.join(' dan ')}, ${s.nama.split(' ')[0]}.</strong> `;
-    fails.forEach(k => txt += `Skor ${k} (${d[k]}) masih di bawah ambang ${SKD[k]}. `);
+    fails.forEach(k => {
+      const sub = SUB.find(s => s.key === k);
+      txt += `Skor ${k} (${d[k]}) masih di bawah ambang ${sub.min}. `;
+    });
   }
   if (d1 && !d1.incomplete) {
-    const deltas = ['TWK', 'TIU', 'TKP'].map(k => ({ k, v: d[k] - d1[k] }));
+    const deltas = SUB.map(sub => ({ k: sub.key, v: d[sub.key] - d1[sub.key] }));
     const best = [...deltas].sort((a, b) => b.v - a.v)[0];
     const worst = [...deltas].sort((a, b) => a.v - b.v)[0];
-    if (best && best.v > 0) txt += `Sub-sesi terbaik peningkatan sejak TO1: <strong>${best.k} +${best.v} poin</strong>. `;
-    if (worst && worst.v < 0) txt += `Sub-sesi yang perlu perhatian: <strong>${worst.k} turun ${worst.v} poin</strong> dibanding TO1. `;
+    if (best?.v > 0) txt += `Peningkatan terbaik sejak TO1: <strong>${best.k} +${best.v}</strong>. `;
+    if (worst?.v < 0) txt += `Perlu perhatian: <strong>${worst.k} turun ${worst.v}</strong> dari TO1. `;
   }
-  return txt || `Terus semangat berlatih, ${s.nama.split(' ')[0]}! Setiap tryout adalah kesempatan belajar.`;
+  return txt || `Terus semangat, ${s.nama.split(' ')[0]}! Setiap tryout adalah kesempatan belajar.`;
 }
 
 function renderProfile(students, idx, tos) {
-  profileCharts.forEach(c => c.destroy());
-  profileCharts = [];
+  if (_radarChart) { _radarChart.destroy(); _radarChart = null; }
   const s = students[idx];
-  const latestTO = tos.filter(n => s.skd[n]).pop();
-  const passLatest = latestTO ? isPass(s.skd[latestTO]) : false;
 
-  let toCells = '';
-  tos.forEach(n => {
-    const d = s.skd[n];
-    if (!d) {
-      toCells += `<div class="to-cell"><div class="to-label">Tryout ${n}</div><div class="to-total" style="color:var(--muted)">—</div><div class="to-subs">Tidak hadir</div><span class="to-badge badge-skip">Absen</span></div>`;
-    } else if (d.incomplete) {
-      toCells += `<div class="to-cell"><div class="to-label">Tryout ${n}</div><div class="to-total" style="color:var(--warn)">${d.Total}</div><div class="to-subs">TWK:${d.TWK} · TIU:${d.TIU}<br>TKP:${d.TKP}</div><span class="to-badge badge-incomplete">Tidak Lengkap</span></div>`;
-    } else {
-      const p = isPass(d);
-      const fails = ['TWK', 'TIU', 'TKP'].filter(k => d[k] < SKD[k]);
-      toCells += `<div class="to-cell">
-        <div class="to-label">Tryout ${n}</div>
-        <div class="to-total" style="color:${p ? '#10B981' : '#EF4444'}">${d.Total}</div>
-        <div class="to-subs" style="font-size:11px">
-          TWK:<b style="color:${d.TWK >= SKD.TWK ? '#10B981' : '#EF4444'}">${d.TWK}</b> ·
-          TIU:<b style="color:${d.TIU >= SKD.TIU ? '#10B981' : '#EF4444'}">${d.TIU}</b><br>
-          TKP:<b style="color:${d.TKP >= SKD.TKP ? '#10B981' : '#EF4444'}">${d.TKP}</b>
-        </div>
-        <span class="to-badge ${p ? 'badge-pass' : 'badge-fail'}">${p ? 'Lulus' : 'Gagal' + (fails.length ? ' (' + fails.join(',') + ')' : '')}</span>
-      </div>`;
-    }
+  // Update button active state
+  document.querySelectorAll('.stu-btn').forEach((b, i) => {
+    const isActive = i === idx;
+    b.style.background   = isActive ? s.color + '33' : 'rgba(255,255,255,.04)';
+    b.style.borderColor  = isActive ? s.color : 'rgba(255,255,255,.1)';
+    b.style.color        = isActive ? s.color : 'var(--text)';
   });
 
-  const toRowCols = Math.min(tos.length, 4);
-  document.getElementById('profileContent').innerHTML = `
-  <div class="profile-card">
-    <div class="profile-header">
-      <div class="profile-avatar" style="background:${s.color}22;border:2px solid ${s.color};color:${s.color}">${initials(s.nama)}</div>
-      <div class="profile-info">
-        <h2 style="color:${s.color}">${s.nama} ${genderBadge(s.gender)}</h2>
-        <p>Siswa Bimbel D'Ajiks Akademi &nbsp;·&nbsp;
-          ${latestTO ? (passLatest ? `<span style="color:#10B981;font-weight:700">✅ Lulus threshold SKD TO${latestTO}</span>` : `<span style="color:#EF4444;font-weight:700">⚠️ Belum lulus semua threshold TO${latestTO}</span>`) : `<span style="color:var(--muted)">Belum ada data SKD</span>`}
-        </p>
+  const latestTO = tos.filter(n => s.skd[n]).pop();
+  const d = latestTO && !s.skd[latestTO]?.incomplete ? s.skd[latestTO] : null;
+  const pass = d ? isPass(d) : false;
+
+  // Normalize to 0-100 for radar
+  const norm = (key, val) => val == null ? 0 : Math.round((val / MAX[key]) * 100);
+  const scores = SUB.map(sub => d ? norm(sub.key, d[sub.key]) : 0);
+  const normMin = SUB.map(sub => Math.round((sub.min / sub.max) * 100));
+  const normGood = SUB.map(sub => Math.round(GOOD_PCT * 100));
+
+  // Focus categories
+  const critical = d ? SUB.filter(sub => d[sub.key] < sub.min) : [];
+  const medium   = d ? SUB.filter(sub => d[sub.key] >= sub.min && d[sub.key] < sub.max * GOOD_PCT) : [];
+  const good     = d ? SUB.filter(sub => d[sub.key] >= sub.max * GOOD_PCT) : [];
+
+  const statusColor = pass ? '#10B981' : '#EF4444';
+  const statusLabel = pass ? '✅ Lulus Semua Threshold' : '❌ Belum Lulus SKD';
+
+  // TO history compact
+  const toHistory = tos.map(n => {
+    const dd = s.skd[n];
+    if (!dd) return `<span style="color:var(--muted);font-size:10px">TO${n}: —</span>`;
+    const p = isPass(dd);
+    const isCurrent = n === latestTO;
+    return `<span style="color:${p ? '#10B981' : '#EF4444'};font-size:10px;${isCurrent ? 'font-weight:700;text-decoration:underline' : ''}">TO${n}: ${dd.Total}</span>`;
+  }).join(' &nbsp;·&nbsp; ');
+
+  // ── Left: radar card
+  const radarCard = `
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;flex:1;min-width:300px;max-width:460px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap">
+        <span style="font-size:16px;font-weight:800;color:${s.color}">${s.nama}</span>
+        ${genderBadge(s.gender)}
+        <span style="padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;color:${statusColor};border:1px solid ${statusColor}44;background:${statusColor}11">${statusLabel}</span>
       </div>
-    </div>
-    <div class="to-row" style="grid-template-columns:repeat(${toRowCols},1fr)">${toCells}</div>
-    <div class="profile-charts">
-      <div class="chart-box"><h3>Tren Skor — TO1 hingga TO${tos[tos.length-1]}</h3><div style="position:relative;height:220px"><canvas id="chartProfile"></canvas></div></div>
-      <div class="chart-box"><h3>Profil Sub-Sesi (TO Terbaru)</h3><div style="position:relative;height:220px"><canvas id="chartRadar"></canvas></div></div>
-    </div>
-    <div class="insight-box">${generateInsight(s, tos)}</div>
-  </div>`;
+      ${d ? `<div style="font-size:11px;color:var(--gold);font-weight:600;margin-bottom:4px">TO${latestTO}: TWK ${d.TWK} · TIU ${d.TIU} · TKP ${d.TKP} · Total ${d.Total}</div>` : ''}
+      <div style="font-size:10px;color:var(--muted);margin-bottom:16px">${toHistory}</div>
+      <canvas id="skdIndvRadar" height="290"></canvas>
+    </div>`;
 
-  const totals = tos.map(n => { const d = s.skd[n]; return (d && !d.incomplete) ? d.Total : null; });
-  const twks   = tos.map(n => { const d = s.skd[n]; return (d && !d.incomplete) ? d.TWK : null; });
-  const tius   = tos.map(n => { const d = s.skd[n]; return (d && !d.incomplete) ? d.TIU : null; });
-  const tkps   = tos.map(n => { const d = s.skd[n]; return (d && !d.incomplete) ? d.TKP : null; });
-  const labels = tos.map(n => `TO${n}`);
+  // ── Right: focus + bars
+  const tagList = (items, color, icon) => items.length
+    ? items.map(sub => `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${color}18;color:${color};border:1px solid ${color}44;margin:2px">${icon} ${sub.key}</span>`).join('')
+    : `<span style="font-size:11px;color:var(--muted)">Tidak ada</span>`;
 
-  profileCharts.push(new Chart(document.getElementById('chartProfile'), {
-    type: 'line',
-    data: { labels, datasets: [
-      { label: 'Total', data: totals, borderColor: s.color, backgroundColor: s.color + '22', borderWidth: 2.5, tension: .35, pointRadius: 5, fill: true },
-      { label: 'TWK', data: twks, borderColor: '#4F7EF8', borderWidth: 1.5, tension: .35, pointRadius: 3, borderDash: [3, 2] },
-      { label: 'TIU', data: tius, borderColor: '#10B981', borderWidth: 1.5, tension: .35, pointRadius: 3, borderDash: [3, 2] },
-      { label: 'TKP', data: tkps, borderColor: '#F5B800', borderWidth: 1.5, tension: .35, pointRadius: 3, borderDash: [3, 2] }
-    ]},
-    options: { responsive: true, maintainAspectRatio: false, spanGaps: false, scales: { y: { min: 0, max: 500, grid: { color: 'rgba(255,255,255,.04)' } }, x: { grid: { color: 'rgba(255,255,255,.04)' } } }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 } } } } }
-  }));
+  const barRows = [
+    ...SUB.map(sub => {
+      const val = d?.[sub.key] ?? 0;
+      const pct = Math.min(100, Math.round((val / sub.max) * 100));
+      const isBelow = val < sub.min;
+      const isGood  = val >= sub.max * GOOD_PCT;
+      const barColor = isBelow ? '#EF4444' : isGood ? '#10B981' : '#F59E0B';
+      return `
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+            <span style="font-size:12px;color:${sub.color};font-weight:600">${sub.key}</span>
+            <span style="font-size:11px;color:var(--muted)">${val} / ${sub.max} &nbsp;<span style="color:${barColor};font-weight:700">(${pct}%)</span></span>
+          </div>
+          <div style="background:rgba(255,255,255,.06);border-radius:4px;height:8px;overflow:hidden;position:relative">
+            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:4px"></div>
+            <div style="position:absolute;top:0;left:${Math.round((sub.min / sub.max) * 100)}%;width:2px;height:100%;background:#F59E0B88"></div>
+          </div>
+          ${isBelow ? `<div style="font-size:10px;color:#EF4444;margin-top:2px">⚠ Di bawah ambang ${sub.min} — harus ditingkatkan</div>` : ''}
+        </div>`;
+    }),
+    // Total bar
+    (() => {
+      const val = d?.Total ?? 0;
+      const pct = Math.min(100, Math.round((val / MAX.Total) * 100));
+      const barColor = pass ? '#10B981' : '#EF4444';
+      return `
+        <div style="margin-bottom:4px;padding-top:8px;border-top:1px solid rgba(255,255,255,.07)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+            <span style="font-size:12px;color:var(--gold);font-weight:700">Total SKD</span>
+            <span style="font-size:11px;color:var(--muted)">${val} / ${MAX.Total} &nbsp;<span style="color:${barColor};font-weight:700">(${pct}%)</span></span>
+          </div>
+          <div style="background:rgba(255,255,255,.06);border-radius:4px;height:8px;overflow:hidden;position:relative">
+            <div style="width:${pct}%;height:100%;background:${barColor};border-radius:4px"></div>
+            <div style="position:absolute;top:0;left:${Math.round((SKD.Total / MAX.Total) * 100)}%;width:2px;height:100%;background:#F59E0B88"></div>
+          </div>
+        </div>`;
+    })(),
+  ].join('');
 
-  const dLatest = latestTO ? (s.skd[latestTO] || { TWK: 0, TIU: 0, TKP: 0 }) : { TWK: 0, TIU: 0, TKP: 0 };
-  profileCharts.push(new Chart(document.getElementById('chartRadar'), {
-    type: 'radar',
-    data: { labels: ['TWK (maks 150)', 'TIU (maks 175)', 'TKP (maks 225)'], datasets: [
-      { label: `Skor TO${latestTO}`, data: [dLatest.TWK, dLatest.TIU, dLatest.TKP], backgroundColor: s.color + '33', borderColor: s.color, borderWidth: 2, pointBackgroundColor: s.color },
-      { label: 'Ambang SKD', data: [65, 80, 166], backgroundColor: 'rgba(245,158,11,.05)', borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [4, 3], pointRadius: 0 }
-    ]},
-    options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 230, grid: { color: 'rgba(255,255,255,.06)' }, pointLabels: { font: { size: 10 } }, ticks: { stepSize: 50, font: { size: 9 } } } }, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 10 } } } } }
-  }));
+  const rightCard = `
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;flex:1;min-width:280px">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">Rekomendasi Focus Area</div>
+      ${critical.length ? `
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;color:#EF4444;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">🚨 Harus Di-Push — Di Bawah Threshold</div>
+        <div>${tagList(critical, '#EF4444', '▼')}</div>
+      </div>` : ''}
+      ${medium.length ? `
+      <div style="margin-bottom:12px">
+        <div style="font-size:10px;color:#F59E0B;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">⚠️ Perlu Ditingkatkan (Aman tapi Belum Kuat)</div>
+        <div>${tagList(medium, '#F59E0B', '~')}</div>
+      </div>` : ''}
+      ${good.length ? `
+      <div style="margin-bottom:16px">
+        <div style="font-size:10px;color:#10B981;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">✅ Sudah Baik (≥ ${Math.round(GOOD_PCT * 100)}% Maks)</div>
+        <div>${tagList(good, '#10B981', '▲')}</div>
+      </div>` : ''}
+      ${!d ? `<div style="color:var(--muted);font-size:12px;margin-bottom:16px">Belum ada data SKD.</div>` : ''}
+      <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:12px">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px">Skor Per Sub Sesi</div>
+        ${barRows}
+      </div>
+      <div style="margin-top:12px;padding:10px;background:rgba(255,255,255,.02);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.7">
+        ${generateInsight(s, tos)}
+      </div>
+    </div>`;
+
+  document.getElementById('profileContent').innerHTML = `
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+      ${radarCard}
+      ${rightCard}
+    </div>`;
+
+  // Build radar chart
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById('skdIndvRadar');
+    if (!canvas) return;
+    if (_radarChart) { _radarChart.destroy(); _radarChart = null; }
+    _radarChart = new Chart(canvas, {
+      type: 'radar',
+      data: {
+        labels: ['TWK (maks 150)', 'TIU (maks 175)', 'TKP (maks 225)'],
+        datasets: [
+          {
+            label: 'Threshold SKD',
+            data: normMin,
+            borderColor: '#F59E0B88',
+            backgroundColor: 'transparent',
+            borderDash: [4, 4],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            order: 99,
+          },
+          {
+            label: `Target Kuat (${Math.round(GOOD_PCT * 100)}%)`,
+            data: Array(3).fill(Math.round(GOOD_PCT * 100)),
+            borderColor: '#10B98166',
+            backgroundColor: '#10B98108',
+            borderDash: [6, 3],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            order: 98,
+          },
+          {
+            label: `TO${latestTO ?? '—'}`,
+            data: scores,
+            borderColor: s.color,
+            backgroundColor: s.color + '22',
+            borderWidth: 2.5,
+            pointBackgroundColor: scores.map((v, i) => {
+              if (!d) return '#6B7280';
+              return d[SUB[i].key] < SUB[i].min ? '#EF4444'
+                   : d[SUB[i].key] >= SUB[i].max * GOOD_PCT ? '#10B981'
+                   : '#F59E0B';
+            }),
+            pointBorderColor: '#fff',
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            order: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            min: 0, max: 100,
+            ticks: { stepSize: 25, color: '#6B7280', font: { size: 10 }, backdropColor: 'transparent' },
+            grid: { color: 'rgba(255,255,255,0.07)' },
+            angleLines: { color: 'rgba(255,255,255,0.1)' },
+            pointLabels: { color: '#D1D5DB', font: { size: 11, weight: '600' } },
+          },
+        },
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#9CA3AF', font: { size: 11 }, padding: 12 } },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                if (ctx.datasetIndex === 2 && d) {
+                  const sub = SUB[ctx.dataIndex];
+                  return ` ${sub.key}: ${d[sub.key]} / ${sub.max}`;
+                }
+                return ` ${ctx.dataset.label}`;
+              },
+            },
+          },
+        },
+      },
+    });
+  });
 }
 
 export function init(students) {
+  _students = students;
   const tos = activeTOs(students);
   const grid = document.getElementById('studentGrid');
   grid.innerHTML = '';
+  grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px';
 
   students.forEach((s, i) => {
     const latestTO = tos.filter(n => s.skd[n]).pop();
-    const btn = document.createElement('div');
-    btn.className = 'stu-btn' + (i === 0 ? ' active' : '');
-    btn.innerHTML = `<div class="stu-avatar" style="background:${s.color}22;border:2px solid ${s.color}44;color:${s.color}">${initials(s.nama)}</div><div class="stu-name">${s.nama}</div><div class="stu-score">${latestTO ? s.skd[latestTO].Total + ' pts TO' + latestTO : 'Belum ada data'}</div>`;
-    btn.onclick = () => {
-      document.querySelectorAll('.stu-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderProfile(students, i, tos);
-    };
+    const d = latestTO ? s.skd[latestTO] : null;
+    const pass = d && !d.incomplete ? isPass(d) : null;
+    const statusColor = pass === true ? '#10B981' : pass === false ? '#EF4444' : 'var(--muted)';
+
+    const btn = document.createElement('button');
+    btn.className = 'stu-btn';
+    btn.style.cssText = `
+      cursor:pointer;border:1px solid rgba(255,255,255,.1);border-radius:10px;
+      padding:8px 14px;background:rgba(255,255,255,.04);color:var(--text);
+      font-size:12px;font-weight:600;text-align:left;transition:all .2s;min-width:120px`;
+    btn.innerHTML = `
+      <span style="color:${s.color}">${s.nama}</span><br>
+      <span style="font-size:10px;color:${statusColor}">${d && !d.incomplete ? (pass ? '✅ Lulus' : '❌ Gagal') + ' · TO' + latestTO + ': ' + d.Total + 'pt' : 'Belum ada data'}</span>`;
+    btn.onclick = () => renderProfile(students, i, tos);
     grid.appendChild(btn);
   });
 
@@ -130,6 +281,5 @@ export function init(students) {
 
 export function renderProfileByIdx(students, idx) {
   const tos = activeTOs(students);
-  document.querySelectorAll('.stu-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
   renderProfile(students, idx, tos);
 }
