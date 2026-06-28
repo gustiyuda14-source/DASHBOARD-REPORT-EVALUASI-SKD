@@ -37,10 +37,7 @@
 
 <div class="tabs-wrap">
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('overview')">📊 Overview Kelas</div>
-    <div class="tab" onclick="switchTab('siswa')">👤 Profil Per Siswa</div>
-    <div class="tab" onclick="switchTab('ranking')">🏆 Ranking & Status</div>
-    <div class="tab" onclick="switchTab('kumulatif')">📋 Ringkasan Kumulatif</div>
+    <div class="tab active" onclick="switchTab('skd')">🎯 SKD</div>
     <div class="tab" onclick="switchTab('toefl')">📝 TOEFL</div>
     <div class="tab" onclick="switchTab('jasmani')">💪 Jasmani</div>
     <div class="tab" onclick="switchTab('psiko')">🧠 Psiko</div>
@@ -48,81 +45,94 @@
 </div>
 
 <div class="content">
-  <div class="panel active" id="panel-overview">
-    <div class="skd-banner">
-      <div class="skd-title">📋 Ambang Batas SKD<br>IPDN 2024</div>
-      <div class="skd-items">
-        <div class="skd-item"><span>TWK</span><strong>≥ 65</strong><em>maks 150</em></div>
-        <div class="skd-item"><span>TIU</span><strong>≥ 80</strong><em>maks 175</em></div>
-        <div class="skd-item"><span>TKP</span><strong>≥ 166</strong><em>maks 225</em></div>
-        <div class="skd-item"><span>Total Min</span><strong>311</strong><em>maks 550</em></div>
-      </div>
-      <div class="skd-note">Berdasarkan PermenPAN-RB No.27/2021. Semua sub-sesi harus melampaui ambang masing-masing secara bersamaan.</div>
-    </div>
-    <div class="sec">
-      <div class="sec-head"><div class="sec-title">Tren Skor Total — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
-      <div class="chart-box"><div class="chart-canvas-wrap"><canvas id="chartTrend"></canvas></div></div>
-    </div>
-    <div class="sec">
-      <div class="sec-head"><div class="sec-title">Perbandingan Sub-Sesi per Tryout</div></div>
-      <div class="rank-filter" id="subTOFilter"></div>
-      <div class="chart-grid chart-grid-3">
-        <div class="chart-box"><h3><span class="dot" style="background:#4F7EF8"></span>TWK — Wawasan Kebangsaan <span style="margin-left:auto;color:#F59E0B">min 65</span></h3><div class="chart-canvas-sm"><canvas id="chartTWK"></canvas></div></div>
-        <div class="chart-box"><h3><span class="dot" style="background:#10B981"></span>TIU — Intelegensia Umum <span style="margin-left:auto;color:#F59E0B">min 80</span></h3><div class="chart-canvas-sm"><canvas id="chartTIU"></canvas></div></div>
-        <div class="chart-box"><h3><span class="dot" style="background:#F5B800"></span>TKP — Karakteristik Pribadi <span style="margin-left:auto;color:#F59E0B">min 166</span></h3><div class="chart-canvas-sm"><canvas id="chartTKP"></canvas></div></div>
-      </div>
-    </div>
-    <div class="sec">
-      <div class="sec-head"><div class="sec-title">Ringkasan Kelas — Status per Tryout</div></div>
-      <div class="chart-box" style="overflow-x:auto">
-        <table class="rank-table"><thead id="classTableHead"></thead><tbody id="classTableBody"></tbody></table>
-      </div>
-    </div>
-  </div>
 
-  <div class="panel" id="panel-siswa">
-    <div style="margin-bottom:16px;font-size:13px;color:var(--muted)">Pilih siswa untuk melihat laporan lengkap perkembangan tryout-nya:</div>
-    <div class="student-grid" id="studentGrid"></div>
-    <div id="profileContent"></div>
-  </div>
+  <!-- ═══ SKD (4 sub-panel) ═══════════════════════════════════════════════ -->
+  <div class="panel active" id="panel-skd">
+    <div class="rank-filter" id="skdSubFilter" style="margin-bottom:16px"></div>
 
-  <div class="panel" id="panel-ranking">
-    <div class="rank-filter" id="rankTOFilter"></div>
-    <div class="chart-box" style="overflow-x:auto;margin-bottom:20px">
-      <table class="rank-table"><thead><tr><th>#</th><th>Nama Siswa</th><th>Gender</th><th>TWK</th><th>TIU</th><th>TKP</th><th>Total</th><th>Status SKD</th><th>Δ dari TO1</th></tr></thead><tbody id="rankBody"></tbody></table>
+    <!-- SUB: Overview Kelas -->
+    <div class="skd-sub active" id="skd-sub-overview">
+      <div class="skd-banner">
+        <div class="skd-title">📋 Ambang Batas SKD<br>IPDN 2024</div>
+        <div class="skd-items">
+          <div class="skd-item"><span>TWK</span><strong>≥ 65</strong><em>maks 150</em></div>
+          <div class="skd-item"><span>TIU</span><strong>≥ 80</strong><em>maks 175</em></div>
+          <div class="skd-item"><span>TKP</span><strong>≥ 166</strong><em>maks 225</em></div>
+          <div class="skd-item"><span>Total Min</span><strong>311</strong><em>maks 550</em></div>
+        </div>
+        <div class="skd-note">Berdasarkan PermenPAN-RB No.27/2021. Semua sub-sesi harus melampaui ambang masing-masing secara bersamaan.</div>
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">Tren Skor Total — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
+        <div class="chart-box"><div class="chart-canvas-wrap"><canvas id="chartTrend"></canvas></div></div>
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">Perbandingan Sub-Sesi per Tryout</div></div>
+        <div class="rank-filter" id="subTOFilter"></div>
+        <div class="chart-grid chart-grid-3">
+          <div class="chart-box"><h3><span class="dot" style="background:#4F7EF8"></span>TWK — Wawasan Kebangsaan <span style="margin-left:auto;color:#F59E0B">min 65</span></h3><div class="chart-canvas-sm"><canvas id="chartTWK"></canvas></div></div>
+          <div class="chart-box"><h3><span class="dot" style="background:#10B981"></span>TIU — Intelegensia Umum <span style="margin-left:auto;color:#F59E0B">min 80</span></h3><div class="chart-canvas-sm"><canvas id="chartTIU"></canvas></div></div>
+          <div class="chart-box"><h3><span class="dot" style="background:#F5B800"></span>TKP — Karakteristik Pribadi <span style="margin-left:auto;color:#F59E0B">min 166</span></h3><div class="chart-canvas-sm"><canvas id="chartTKP"></canvas></div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">Ringkasan Kelas — Status per Tryout</div></div>
+        <div class="chart-box" style="overflow-x:auto">
+          <table class="rank-table"><thead id="classTableHead"></thead><tbody id="classTableBody"></tbody></table>
+        </div>
+      </div>
     </div>
-    <div id="rankInsights" class="chart-box" style="padding:20px"></div>
-  </div>
 
-  <div class="panel" id="panel-kumulatif">
-    <div style="margin-bottom:20px;font-size:13px;color:var(--muted);background:linear-gradient(135deg,rgba(79,126,248,.06),rgba(245,184,0,.04));border:1px solid rgba(79,126,248,.15);border-radius:var(--r);padding:14px 20px;line-height:1.8">
-      Ranking siswa berdasarkan <strong style="color:var(--gold)">rata-rata skor total</strong> dari semua tryout yang telah diselesaikan.
-      Tryout dengan status <em>absen</em> tidak dihitung dalam rata-rata.
-      <span style="color:var(--warn)">*</span> menandakan skor tryout tidak lengkap.
+    <!-- SUB: Profil Individu -->
+    <div class="skd-sub" id="skd-sub-siswa">
+      <div style="margin-bottom:16px;font-size:13px;color:var(--muted)">Pilih siswa untuk melihat laporan lengkap perkembangan tryout-nya:</div>
+      <div class="student-grid" id="studentGrid"></div>
+      <div id="profileContent"></div>
     </div>
-    <div class="sec">
-      <div class="sec-head"><div class="sec-title">Ranking Kumulatif — Rata-rata Skor Total</div></div>
+
+    <!-- SUB: Ranking -->
+    <div class="skd-sub" id="skd-sub-ranking">
+      <div class="rank-filter" id="rankTOFilter"></div>
       <div class="chart-box" style="overflow-x:auto;margin-bottom:20px">
-        <table class="rank-table"><thead id="kumulatifHead"></thead><tbody id="kumulatifBody"></tbody></table>
+        <table class="rank-table"><thead><tr><th>#</th><th>Nama Siswa</th><th>Gender</th><th>TWK</th><th>TIU</th><th>TKP</th><th>Total</th><th>Status SKD</th><th>Δ dari TO1</th></tr></thead><tbody id="rankBody"></tbody></table>
       </div>
+      <div id="rankInsights" class="chart-box" style="padding:20px"></div>
     </div>
-    <div class="sec">
-      <div class="sec-head"><div class="sec-title">Perbandingan Rata-rata Skor — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
-      <div class="chart-box"><div class="chart-canvas-wrap"><canvas id="chartKumulatif"></canvas></div></div>
+
+    <!-- SUB: Kumulatif -->
+    <div class="skd-sub" id="skd-sub-kumulatif">
+      <div style="margin-bottom:20px;font-size:13px;color:var(--muted);background:linear-gradient(135deg,rgba(79,126,248,.06),rgba(245,184,0,.04));border:1px solid rgba(79,126,248,.15);border-radius:var(--r);padding:14px 20px;line-height:1.8">
+        Ranking siswa berdasarkan <strong style="color:var(--gold)">rata-rata skor total</strong> dari semua tryout yang telah diselesaikan.
+        Tryout dengan status <em>absen</em> tidak dihitung dalam rata-rata.
+        <span style="color:var(--warn)">*</span> menandakan skor tryout tidak lengkap.
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">Ranking Kumulatif — Rata-rata Skor Total</div></div>
+        <div class="chart-box" style="overflow-x:auto;margin-bottom:20px">
+          <table class="rank-table"><thead id="kumulatifHead"></thead><tbody id="kumulatifBody"></tbody></table>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">Perbandingan Rata-rata Skor — Semua Siswa</div><div style="font-size:11px;color:var(--muted)">Garis putus-putus = ambang minimum 311</div></div>
+        <div class="chart-box"><div class="chart-canvas-wrap"><canvas id="chartKumulatif"></canvas></div></div>
+      </div>
+      <div id="kumulatifInsights" class="chart-box" style="padding:20px"></div>
     </div>
-    <div id="kumulatifInsights" class="chart-box" style="padding:20px"></div>
   </div>
 
+  <!-- ═══ TOEFL ══════════════════════════════════════════════════════════ -->
   <div class="panel" id="panel-toefl">
     <div class="rank-filter" id="toeflFilter"></div>
     <div class="chart-box" style="overflow-x:auto" id="toeflContent"></div>
   </div>
 
+  <!-- ═══ JASMANI ════════════════════════════════════════════════════════ -->
   <div class="panel" id="panel-jasmani">
     <div class="rank-filter" id="jasmaniFilter"></div>
     <div class="chart-box" style="overflow-x:auto" id="jasmaniContent"></div>
   </div>
 
+  <!-- ═══ PSIKO ══════════════════════════════════════════════════════════ -->
   <div class="panel" id="panel-psiko">
     <div class="rank-filter" id="psikoFilter"></div>
     <div class="chart-box" style="overflow-x:auto" id="psikoContent"></div>

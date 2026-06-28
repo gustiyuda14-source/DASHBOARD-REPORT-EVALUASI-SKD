@@ -18,7 +18,13 @@ Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.1)';
 Chart.defaults.plugins.tooltip.borderWidth = 1;
 Chart.defaults.plugins.tooltip.padding = 10;
 
-const TABS = ['overview', 'siswa', 'ranking', 'kumulatif', 'toefl', 'jasmani', 'psiko'];
+const TABS = ['skd', 'toefl', 'jasmani', 'psiko'];
+const SKD_SUBS = [
+  { id: 'overview',  label: '📊 Overview Kelas' },
+  { id: 'siswa',     label: '👤 Profil Individu' },
+  { id: 'ranking',   label: '🏆 Ranking' },
+  { id: 'kumulatif', label: '📋 Kumulatif' },
+];
 let _students = [];
 
 window.switchTab = function (id) {
@@ -26,11 +32,30 @@ window.switchTab = function (id) {
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
 };
 
+window.switchSKDSub = function (subId) {
+  document.querySelectorAll('#panel-skd .skd-sub').forEach(p => p.classList.toggle('active', p.id === 'skd-sub-' + subId));
+  document.querySelectorAll('#skdSubFilter .rank-btn').forEach(b => b.classList.toggle('active', b.dataset.sub === subId));
+};
+
 window.goProfile = function (idx) {
-  window.switchTab('siswa');
+  window.switchTab('skd');
+  window.switchSKDSub('siswa');
   renderProfileByIdx(_students, idx);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+function buildSKDSubFilter() {
+  const filter = document.getElementById('skdSubFilter');
+  filter.innerHTML = '';
+  SKD_SUBS.forEach((sub, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'rank-btn' + (i === 0 ? ' active' : '');
+    btn.dataset.sub = sub.id;
+    btn.textContent = sub.label;
+    btn.onclick = () => window.switchSKDSub(sub.id);
+    filter.appendChild(btn);
+  });
+}
 
 function updateStats(students) {
   const tos = activeTOs(students);
@@ -60,6 +85,7 @@ async function boot() {
   try {
     _students = await fetchAllData();
     updateStats(_students);
+    buildSKDSubFilter();
     initOverview(_students);
     initSiswa(_students);
     initRanking(_students);

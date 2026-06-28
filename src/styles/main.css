@@ -43,6 +43,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min
 /* Content */
 .content{padding:28px 32px;max-width:1400px;margin:0 auto}
 .panel{display:none}.panel.active{display:block}
+.skd-sub{display:none}.skd-sub.active{display:block}
 
 /* SKD Banner */
 .skd-banner{background:linear-gradient(135deg,rgba(79,126,248,.08),rgba(16,185,129,.06));border:1px solid rgba(79,126,248,.2);border-radius:var(--r);padding:16px 24px;margin-bottom:24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
