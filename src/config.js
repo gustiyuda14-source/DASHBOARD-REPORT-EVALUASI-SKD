@@ -34,7 +34,8 @@ export const JASMANI_STANDARDS = {
 export function calcJasmani(gender, data) {
   const std = JASMANI_STANDARDS[gender] || JASMANI_STANDARDS.L;
   const score = (key, val) => {
-    if (val == null || val <= 0) return null;
+    if (val == null) return null;   // kosong = belum ditest
+    if (val <= 0) return 0;         // 0 atau negatif = score 0 → pasti TMS
     const r = std[key];
     if (r.inverted) {
       if (val <= r.max) return 100;

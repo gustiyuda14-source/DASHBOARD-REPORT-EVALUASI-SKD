@@ -27,9 +27,17 @@ function buildHeaders(row1, row2) {
 
 function intOrNull(val) {
   const s = (val || '').trim();
-  if (s === '' || s === '0' && false) return null; // keep 0 as valid
+  if (s === '') return null;
   const n = parseInt(s);
   return isNaN(n) ? null : n;
+}
+
+// Untuk lariAngka8 — presisi mili-detik penting (e.g. 16.5 ≠ 16)
+function floatOrNull(val) {
+  const s = (val || '').trim();
+  if (s === '') return null;
+  const n = parseFloat(s);
+  return isNaN(n) ? null : Math.round(n * 100) / 100; // presisi 2 desimal
 }
 
 function parseSKD(rows) {
@@ -91,7 +99,7 @@ function mergeJASMANI(students, rows) {
       const n = parseInt(m[1]);
       const key = fieldMap[h.sub] || h.sub;
       if (!s.jasmani[n]) s.jasmani[n] = {};
-      s.jasmani[n][key] = intOrNull(row[i]);
+      s.jasmani[n][key] = key === 'lariAngka8' ? floatOrNull(row[i]) : intOrNull(row[i]);
     });
     Object.keys(s.jasmani).forEach(n => {
       const allNull = Object.values(s.jasmani[n]).every(v => v == null);
